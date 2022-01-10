@@ -12,11 +12,20 @@ namespace SalesRegister.Model
         [Key]
         public int Id { get; set; }
 
+        [Required]
+
         public int Quantity { get; set; }
 
+        
+        [Required]
         [ForeignKey(nameof(ProductsModel.Product))]
         public string Product { get; set; }
 
+        [Required]
+        [ForeignKey(nameof(ProductsModel.Product))]
+        public string Measure { get; set; }
+
+        [Required]
         [ForeignKey(nameof(ProductsModel.UnitPrice))]
         public float UnitPrice { get; set; }
 

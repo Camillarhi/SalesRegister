@@ -6,25 +6,25 @@ using System.Threading.Tasks;
 
 namespace SalesRegister.Model
 {
-    public class ProductsModel
+    public class ProductBalanceModel
     {
         [Key]
         public int Id { get; set; }
 
         [Required]
         public string ProductCode { get; set; }
+
         [Required]
-
         public string Product { get; set; }
-
         [Required]
         public string Measure { get; set; }
-
-        //public string BarcodeImage { get; set; }
         [Required]
+        public int Quantity { get; set; }
+        [Required]
+        public DateTime Date { get; set; }
 
-        public float UnitPrice { get; set; }
 
-       
+
+
     }
 }
