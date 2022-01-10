@@ -60,16 +60,28 @@ namespace SalesRegister.Controllers
                    records.Quantity = dailyRecordsModel.Quantity;
 
                    records.Product = dailyRecordsModel.Product;
+                    records.Measure = dailyRecordsModel.Measure;
 
-                var product = _db.Products.Where(u => u.Product == records.Product).Select(u=>u.Id).FirstOrDefault();
+
+                var product = _db.Products.Where(u => u.Measure == records.Measure&& u.Product==records.Product).Select(u=>u.Id).FirstOrDefault();
                 var item = _db.Products.Find(product);
                 
 
-                if (item.Product == dailyRecordsModel.Product)
+                if (item.Product == records.Product&& item.Measure==records.Measure)
                 {
                     records.UnitPrice = item.UnitPrice;
                     records.Amount = records.UnitPrice * records.Quantity;
+
+
                 }
+
+                var productsQty = _db.ProductBalances.Where(u => u.Measure == records.Measure && u.Product == records.Product).Select(u => u.Id).FirstOrDefault();
+                var update = _db.ProductBalances.Find(productsQty);
+                update.Quantity= update.Quantity - records.Quantity;
+              //  var updateQty = update.Quantity - records.Quantity;
+
+                _db.ProductBalances.Update(update);
+
                 _db.DailyRecords.Add(records);
                 _db.SaveChanges();
             }
@@ -83,6 +95,7 @@ namespace SalesRegister.Controllers
             if (ModelState.IsValid)
             {
                 var records = _db.DailyRecords.Find(Id);
+                records.Measure = dailyRecordsModel.Measure;
                 records.Quantity = dailyRecordsModel.Quantity;
                 records.Amount = records.Quantity * records.UnitPrice;
 

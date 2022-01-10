@@ -5,6 +5,7 @@ using SalesRegister.DTOs;
 using SalesRegister.Model;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -52,12 +53,14 @@ namespace SalesRegister.Controllers
         {
             if (ModelState.IsValid)
             {
-                var total = new TotalModel()
-                {
-                    Date = DateTime.Now,
-                    Total=totalModel.Total
+                var total = new TotalModel();
+
+                total.Date = DateTime.Now;
+                var table = _db.DailyRecords.Select(u => u.Amount);
+                total.Total = table.Sum();
+                              
                 
-                };
+                
                 _db.Totals.Add(total);
                 _db.SaveChanges();
             }
