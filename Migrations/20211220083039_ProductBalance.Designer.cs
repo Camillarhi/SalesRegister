@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SalesRegister.ApplicationDbContex;
@@ -9,9 +10,10 @@ using SalesRegister.ApplicationDbContex;
 namespace SalesRegister.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211220083039_ProductBalance")]
+    partial class ProductBalance
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,7 +159,6 @@ namespace SalesRegister.Migrations
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("CompanyName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -175,16 +176,7 @@ namespace SalesRegister.Migrations
                     b.Property<float>("Amount")
                         .HasColumnType("real");
 
-                    b.Property<string>("Measure")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Product")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ProductCode")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Quantity")
@@ -209,15 +201,12 @@ namespace SalesRegister.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Measure")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Product")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ProductCode")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Quantity")
@@ -239,15 +228,12 @@ namespace SalesRegister.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Measure")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Product")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ProductCode")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Quantity")
@@ -265,16 +251,10 @@ namespace SalesRegister.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<string>("Measure")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Product")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ProductCode")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<float>("UnitPrice")
@@ -293,7 +273,6 @@ namespace SalesRegister.Migrations
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("Department")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -316,7 +295,7 @@ namespace SalesRegister.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("DateOfBirth")
+                    b.Property<DateTime>("DateOfBirth")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Email")

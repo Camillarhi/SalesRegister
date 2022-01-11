@@ -22,7 +22,7 @@ namespace SalesRegister.Model
         public string Product { get; set; }
 
         [Required]
-        [ForeignKey(nameof(ProductsModel.Product))]
+        [ForeignKey(nameof(ProductsModel.Measure))]
         public string Measure { get; set; }
 
         [Required]

@@ -15,6 +15,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SalesRegister.ApplicationDbContex;
 using Microsoft.OpenApi.Models;
+using SalesRegister.HelperClass;
 
 namespace SalesRegister
 {
@@ -30,9 +31,15 @@ namespace SalesRegister
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            var sqlConnectionString = Configuration["ConnectionStrings:SalesConnection"];
+
             services.AddDbContext<ApplicationDbContext>(options =>
-              options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
-          );
+               options.UseNpgsql(sqlConnectionString)
+           );
+
+            services.AddScoped<IFileStorageService, InAppStorageService>();
+            services.AddAutoMapper(typeof(Startup));
 
 
             services.AddIdentity<StaffModel, IdentityRole>()
@@ -43,6 +50,16 @@ namespace SalesRegister
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SalesRegister", Version = "v1" });
+            });
+
+            services.AddCors(options =>
+            {
+                var frontendURL = Configuration.GetValue<string>("frontend_url");
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins(frontendURL).AllowAnyMethod().AllowAnyHeader()
+                        .WithExposedHeaders(new string[] { "totalAmountOfRecords" });
+                });
             });
         }
 
@@ -59,6 +76,8 @@ namespace SalesRegister
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthorization();
 

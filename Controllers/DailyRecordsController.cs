@@ -55,7 +55,7 @@ namespace SalesRegister.Controllers
             if (ModelState.IsValid)
             {
 
-                var records = new DailyRecordsModel();
+                var records = new CustomerInvoiceDetailModel();
                 
                    records.Quantity = dailyRecordsModel.Quantity;
 
@@ -75,14 +75,14 @@ namespace SalesRegister.Controllers
 
                 }
 
-                var productsQty = _db.ProductBalances.Where(u => u.Measure == records.Measure && u.Product == records.Product).Select(u => u.Id).FirstOrDefault();
-                var update = _db.ProductBalances.Find(productsQty);
-                update.Quantity= update.Quantity - records.Quantity;
-              //  var updateQty = update.Quantity - records.Quantity;
+              //  var productsQty = _db.ProductBalances.Where(u => u.Measure == records.Measure && u.Product == records.Product).Select(u => u.Id).FirstOrDefault();
+              //  var update = _db.ProductBalances.Find(productsQty);
+              //  update.Quantity= update.Quantity - records.Quantity;
+              ////  var updateQty = update.Quantity - records.Quantity;
 
-                _db.ProductBalances.Update(update);
+              //  _db.ProductBalances.Update(update);
 
-                _db.DailyRecords.Add(records);
+                _db.CustomerInvoiceDetails.Add(records);
                 _db.SaveChanges();
             }
             return Ok();
