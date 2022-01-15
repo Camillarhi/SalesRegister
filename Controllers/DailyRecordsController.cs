@@ -50,30 +50,52 @@ namespace SalesRegister.Controllers
 
         [HttpPost]
 
-        public ActionResult Post([FromBody] DailyRecordsModelDTO dailyRecordsModel)
+        public ActionResult Post([FromBody] List<DailyRecordsModel> dailyRecordsModel)
         {
             if (ModelState.IsValid)
             {
 
-                var records = new CustomerInvoiceDetailModel();
+                var record = new DailyRecordsModel();
+                var records = new List<DailyRecordsModel>(); 
                 
-                   records.Quantity = dailyRecordsModel.Quantity;
-
-                   records.Product = dailyRecordsModel.Product;
-                    records.Measure = dailyRecordsModel.Measure;
-
-
-                var product = _db.Products.Where(u => u.Measure == records.Measure&& u.Product==records.Product).Select(u=>u.Id).FirstOrDefault();
-                var item = _db.Products.Find(product);
-                
-
-                if (item.Product == records.Product&& item.Measure==records.Measure)
+                foreach (var item in dailyRecordsModel)
                 {
-                    records.UnitPrice = item.UnitPrice;
-                    records.Amount = records.UnitPrice * records.Quantity;
+                    item.Id = 0;
+                    record.Quantity = item.Quantity;
 
+                    record.Product = item.Product;
+                    record.Measure = item.Measure;
 
+                    var product = _db.Products.Where(u => u.Measure == record.Measure && u.Product == record.Product).FirstOrDefault().UnitPrice;
+                    item.UnitPrice = product;
+                    item.Amount = product * record.Quantity;
+                    var productsQty = _db.ProductBalances.Where(u => u.Measure == record.Measure && u.Product == record.Product).Select(u => u.Id).FirstOrDefault();
+                    var update = _db.ProductBalances.Find(productsQty);
+                    update.Quantity = update.Quantity - record.Quantity;
+                    //  var updateQty = update.Quantity - records.Quantity;
+
+                    _db.ProductBalances.Update(update);
+
+                    records.Add(item);
                 }
+                
+                //   records.Quantity = dailyRecordsModel.Quantity;
+
+                //   records.Product = dailyRecordsModel.Product;
+                //    records.Measure = dailyRecordsModel.Measure;
+
+
+                //var products = _db.Products.Where(u => u.Measure == records.Measure&& u.Product==records.Product).FirstOrDefault();
+                //var item = _db.Products.Find(products);
+                
+
+                //if (item.Product == records.Product&& item.Measure==records.Measure)
+                //{
+                //    records.UnitPrice = item.UnitPrice;
+                //    records.Amount = records.UnitPrice * records.Quantity;
+
+
+                //}
 
               //  var productsQty = _db.ProductBalances.Where(u => u.Measure == records.Measure && u.Product == records.Product).Select(u => u.Id).FirstOrDefault();
               //  var update = _db.ProductBalances.Find(productsQty);
@@ -82,7 +104,7 @@ namespace SalesRegister.Controllers
 
               //  _db.ProductBalances.Update(update);
 
-                _db.CustomerInvoiceDetails.Add(records);
+                _db.DailyRecords.AddRange(records);
                 _db.SaveChanges();
             }
             return Ok();

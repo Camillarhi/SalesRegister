@@ -20,6 +20,9 @@ namespace SalesRegister.HelperClass
             CreateMap<StaffModelDTO, StaffModel>().ReverseMap()
                .ForMember(x => x.ProfilePicture, options => options.Ignore())
                ;
+
+            CreateMap<DailyRecordsModelDTO, DailyRecordsModel>().ReverseMap()
+              ;
         }
     }
 }

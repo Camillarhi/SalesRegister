@@ -106,9 +106,11 @@ namespace SalesRegister.Controllers
         {
             if (ModelState.IsValid)
             {
-                var staff = new StaffModel();
-                staff.UserName = register.UserName;
-                staff.Email = register.UserName;
+                var staff = new StaffModel
+                {
+                    UserName = register.UserName,
+                    Email = register.UserName
+                };
 
                 var result = await _userManager.CreateAsync(staff, register.Password);
 
