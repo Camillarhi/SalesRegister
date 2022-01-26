@@ -16,6 +16,9 @@ using System.Threading.Tasks;
 using SalesRegister.ApplicationDbContex;
 using Microsoft.OpenApi.Models;
 using SalesRegister.HelperClass;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace SalesRegister
 {
@@ -43,8 +46,31 @@ namespace SalesRegister
 
 
             services.AddIdentity<StaffModel, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-               
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer()
+                    .AddJwtBearer(options =>
+                    {
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+
+                            ValidateIssuer = false,
+                            ValidateAudience = false,
+                            ValidateLifetime = true,
+                            ValidateIssuerSigningKey = true,
+                            IssuerSigningKey = new SymmetricSecurityKey(
+                                Encoding.UTF8.GetBytes(Configuration["keyjwt"])),
+                            ClockSkew= TimeSpan.Zero
+
+                        };
+                    });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("IsAdmin", policy => policy.RequireClaim("role", "admin"));
+            });
+
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

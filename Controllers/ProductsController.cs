@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using IronBarCode;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SalesRegister.ApplicationDbContex;
@@ -16,6 +18,7 @@ namespace SalesRegister.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme, Policy ="IsAdmin")]
     public class ProductsController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
@@ -31,8 +34,9 @@ namespace SalesRegister.Controllers
             _db = db;
         }
 
-        [HttpGet]
 
+        [HttpGet]
+        [AllowAnonymous]
         public ActionResult<ProductsModel> GetAll()
         {
             IEnumerable<ProductsModel> objList = _db.Products;

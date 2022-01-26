@@ -111,7 +111,6 @@ C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\Microsoft.IdentityModel.Pr
 C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\Microsoft.IdentityModel.Tokens.dll
 C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\Microsoft.IO.RecyclableMemoryStream.dll
 C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\Microsoft.OpenApi.dll
-C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\Newtonsoft.Json.dll
 C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\Npgsql.dll
 C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
 C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\Swashbuckle.AspNetCore.Swagger.dll
@@ -154,3 +153,4 @@ C:\TASKS\SalesRegister\SalesRegister\obj\Debug\net5.0\ref\SalesRegister.dll
 C:\TASKS\SalesRegister\SalesRegister\obj\Debug\net5.0\SalesRegister.pdb
 C:\TASKS\SalesRegister\SalesRegister\obj\Debug\net5.0\SalesRegister.genruntimeconfig.cache
 C:\TASKS\SalesRegister\SalesRegister\obj\Debug\net5.0\SalesRegister.csproj.AssemblyReference.cache
+C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
