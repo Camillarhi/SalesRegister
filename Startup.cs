@@ -49,7 +49,7 @@ namespace SalesRegister
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer()
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(options =>
                     {
                         options.TokenValidationParameters = new TokenValidationParameters
@@ -61,10 +61,11 @@ namespace SalesRegister
                             ValidateIssuerSigningKey = true,
                             IssuerSigningKey = new SymmetricSecurityKey(
                                 Encoding.UTF8.GetBytes(Configuration["keyjwt"])),
-                            ClockSkew= TimeSpan.Zero
+                            ClockSkew = TimeSpan.Zero
 
                         };
                     });
+
 
             services.AddAuthorization(options =>
             {
