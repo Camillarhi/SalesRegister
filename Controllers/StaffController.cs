@@ -365,6 +365,7 @@ namespace SalesRegister.Controllers
                 new Claim("email", login.Email)
             };
 
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["keyjwt"]));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

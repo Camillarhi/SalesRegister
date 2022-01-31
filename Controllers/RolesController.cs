@@ -78,7 +78,7 @@ namespace SalesRegister.Controllers
         {
             if (ModelState.IsValid)
             {
-                var departmentId = _db.Department.Find(rolesModel.Id);
+                 var departmentId = _db.Department.Find(rolesModel.Id);
                 //var roleId =  _db.Roles.Where(u => u)
                 //              .Select(u => u.Id).FirstOrDefault();
                 departmentId.Department = rolesModel.Department;

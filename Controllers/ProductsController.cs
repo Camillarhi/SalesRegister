@@ -18,7 +18,7 @@ namespace SalesRegister.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme, Policy ="IsAdmin")]
+    [Authorize(Roles = "Admin")]
     public class ProductsController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
