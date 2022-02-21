@@ -18,7 +18,7 @@ namespace SalesRegister.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+  //  [Authorize(Roles = "Admin")]
     public class ProductsController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
@@ -36,10 +36,18 @@ namespace SalesRegister.Controllers
 
 
         [HttpGet]
-        [AllowAnonymous]
+     //   [AllowAnonymous]
         public ActionResult<ProductsModel> GetAll()
         {
             IEnumerable<ProductsModel> objList = _db.Products;
+            return Ok(objList);
+        }
+
+        [HttpGet("getProduct")]
+        //   [AllowAnonymous]
+        public ActionResult<ProductsModel> GetProduct()
+        {
+            var objList = _db.Products.Select(x => x.Product).Distinct().ToList();
             return Ok(objList);
         }
 
@@ -62,6 +70,42 @@ namespace SalesRegister.Controllers
             return Ok(obj);
         }
 
+
+        [HttpGet("productname")]
+    //    [AllowAnonymous]
+
+        public ActionResult GetMeasure(string Name)
+         {
+            if (Name == null)
+            {
+                return NotFound();
+            }
+            var obj = _db.Products.Where(x => x.Product == Name).Select(x => new { x.Measure, x.UnitPrice }).ToList();
+
+
+            if (obj == null)
+            {
+                return NotFound();
+            }
+            return Ok(obj);
+        }
+
+       
+        [HttpGet("filter")]
+        public async Task<ActionResult<List<ProductsModelDTO>>> Filter([FromQuery] FilterProducts filterProducts)
+        {
+            var productQuerable = _db.Products.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filterProducts.Product))
+            {
+                productQuerable = productQuerable.Where(x => x.Product.Contains(filterProducts.Product));
+
+            }
+           // await HttpContext.InsertParameterPaginationInHeader(productQuerable);
+            var products =  productQuerable.OrderBy(x => x.Product).ToList();
+            return Ok(products);
+          //  return Mapper.Map<List<ProductsModelDTO>>(products);
+        }
 
         [HttpPost]
 
