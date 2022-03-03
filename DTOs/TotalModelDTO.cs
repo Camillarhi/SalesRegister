@@ -10,5 +10,7 @@ namespace SalesRegister.DTOs
         public DateTime Date { get; set; }
 
         public float Total { get; set; }
+
+
     }
 }

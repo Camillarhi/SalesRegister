@@ -13,29 +13,22 @@ namespace SalesRegister.Model
         public  int Id { get; set; }
 
         [Required]
-        [ForeignKey(nameof(CustomerInvoiceModel.Id))]
-        public int InvoiceId { get; set; }
+        public string InvoiceId { get; set; }
 
         [Required]
-        [ForeignKey(nameof(DailyRecordsModel.Product))]
         public string Product { get; set; }
 
         [Required]
-        [ForeignKey(nameof(DailyRecordsModel.Measure))]
         public string Measure { get; set; }
 
         [Required]
-        [ForeignKey(nameof(DailyRecordsModel.Quantity))]
-
         public int Quantity { get; set; }       
 
         [Required]
-        [ForeignKey(nameof(DailyRecordsModel.UnitPrice))]
         public float UnitPrice { get; set; }
 
-        [Required]
-        [ForeignKey(nameof(DailyRecordsModel.Amount))]
-
         public float Amount { get; set; }
+
+        public DateTime Date { get; set; }
     }
 }

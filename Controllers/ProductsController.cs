@@ -113,15 +113,16 @@ namespace SalesRegister.Controllers
         {
             if (ModelState.IsValid)
             {
-                var product = new ProductsModel();
+                var product = new ProductsModel
+                {
+                    ProductCode = productsModel.ProductCode,
+                    Product = (productsModel.Product).ToUpper(),
+                    UnitPrice = productsModel.UnitPrice,
+                    Measure = productsModel.Measure
+                };
 
-                product.ProductCode = productsModel.ProductCode;
-                product.Product = (productsModel.Product).ToUpper();
-                product.UnitPrice = productsModel.UnitPrice;
-                product.Measure = productsModel.Measure;
-                
 
-               
+
 
 
                 // product.BarcodeImage = await _fileStorageService.SaveFile(containerName, productsModel.BarcodeImage);
