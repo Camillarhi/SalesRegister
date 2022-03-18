@@ -19,7 +19,6 @@ using SalesRegister.HelperClass;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using AutoMapper;
 
 namespace SalesRegister
 {
@@ -112,16 +111,7 @@ namespace SalesRegister
                 });
             });
 
-            //services.AddSingleton(provider => new MapperConfiguration(config =>
-            //{
-            //    var geometryFactory = provider.GetRequiredService<GeometryFactory>();
-            //    config.AddProfile(new AutoMapperProfiles(geometryFactory));
-            //}).CreateMapper());
-
-            //services.AddSingleton<GeometryFactory>(NtsGeometryServices
-            //    .Instance.CreateGeometryFactory(srid: 4326));
-            var applicationInsight = Configuration["ApplicationInsights:ConnectionString"];
-            services.AddApplicationInsightsTelemetry(applicationInsight);
+            services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

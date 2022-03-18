@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <ApplicationInsightsResourceId>/subscriptions/a08205b3-3499-46a7-a504-62a3699774ec/resourceGroups/SalesRegister20220318104223ResourceGroup/providers/microsoft.insights/components/salesregister</ApplicationInsightsResourceId>
+    <UserSecretsId>08d0f8b4-76c5-445d-898c-13db80109f87</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -9,6 +11,7 @@
     <PackageReference Include="BarCode" Version="2021.11.0" />
     <PackageReference Include="EPPlus" Version="5.8.4" />
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.15.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.13" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.12" />
