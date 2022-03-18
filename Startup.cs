@@ -39,7 +39,7 @@ namespace SalesRegister
 
             services.AddDbContext<ApplicationDbContext>(options =>
                //options.UseNpgsql(sqlConnectionString)
-               options.UseSqlServer(sqlConnectionString)
+               options.UseSqlServer(Configuration.GetConnectionString("SalesConnection"))
            );
 
             services.AddScoped<IFileStorageService, InAppStorageService>();
