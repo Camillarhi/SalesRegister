@@ -5,12 +5,10 @@ using System.Threading.Tasks;
 
 namespace SalesRegister.DTOs
 {
-    public class TotalModelDTO
+    public class AuthenticationResponse
     {
-        public DateTime Date { get; set; }
+        public string Token { get; set; }
 
-        public float Total { get; set; }
-
-
+        public DateTime Expiration { get; set; }
     }
 }

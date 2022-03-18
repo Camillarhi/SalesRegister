@@ -29,6 +29,11 @@ namespace SalesRegister.Model
         [ForeignKey(nameof(ProductsModel.UnitPrice))]
         public float UnitPrice { get; set; }
 
+        [Required]
         public float Amount { get; set; }
+
+        public DateTime Date { get; set; }
+
+        public string CustomerName { get; set; }
     }
 }

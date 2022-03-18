@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SalesRegister.ApplicationDbContex;
@@ -9,9 +10,10 @@ using SalesRegister.ApplicationDbContex;
 namespace SalesRegister.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220113000221_removeproductcode")]
+    partial class removeproductcode
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -165,69 +167,6 @@ namespace SalesRegister.Migrations
                     b.ToTable("CompanyName");
                 });
 
-            modelBuilder.Entity("SalesRegister.Model.CustomerInvoiceDetailModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<float>("Amount")
-                        .HasColumnType("real");
-
-                    b.Property<int?>("CustomerInvoiceModelId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("InvoiceId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Measure")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Product")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.Property<float>("UnitPrice")
-                        .HasColumnType("real");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerInvoiceModelId");
-
-                    b.ToTable("CustomerInvoiceDetailModel");
-                });
-
-            modelBuilder.Entity("SalesRegister.Model.CustomerInvoiceModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<string>("CustomerName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("InvoiceId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<float>("Total")
-                        .HasColumnType("real");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CustomerInvoice");
-                });
-
             modelBuilder.Entity("SalesRegister.Model.DailyRecordsModel", b =>
                 {
                     b.Property<int>("Id")
@@ -237,12 +176,6 @@ namespace SalesRegister.Migrations
 
                     b.Property<float>("Amount")
                         .HasColumnType("real");
-
-                    b.Property<string>("CustomerName")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Measure")
                         .IsRequired()
@@ -518,18 +451,6 @@ namespace SalesRegister.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("SalesRegister.Model.CustomerInvoiceDetailModel", b =>
-                {
-                    b.HasOne("SalesRegister.Model.CustomerInvoiceModel", null)
-                        .WithMany("InvoiceDetail")
-                        .HasForeignKey("CustomerInvoiceModelId");
-                });
-
-            modelBuilder.Entity("SalesRegister.Model.CustomerInvoiceModel", b =>
-                {
-                    b.Navigation("InvoiceDetail");
                 });
 #pragma warning restore 612, 618
         }
