@@ -3,14 +3,19 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using SalesRegister.ApplicationDbContex;
 using SalesRegister.DTOs;
 using SalesRegister.HelperClass;
 using SalesRegister.Model;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace SalesRegister.Controllers
 {
@@ -21,14 +26,15 @@ namespace SalesRegister.Controllers
         private readonly ApplicationDbContext _db;
         private readonly IMapper _mapper;
         private readonly IFileStorageService _fileStorageService;
+        private readonly IConfiguration _configuration; 
         private readonly string containerName = "Staff";
         UserManager<StaffModel> _userManager;
         SignInManager<StaffModel> _signInManager;
         RoleManager<IdentityRole> _roleManager;
 
 
-        public StaffController(ApplicationDbContext db, IFileStorageService fileStorageService, IMapper mapper, UserManager<StaffModel> userManager,
-       SignInManager<StaffModel> signInManager, RoleManager<IdentityRole> roleManager)
+        public StaffController(ApplicationDbContext db, IFileStorageService fileStorageService, IMapper mapper, UserManager<StaffModel> userManager, 
+       SignInManager<StaffModel> signInManager, IConfiguration configuration, RoleManager<IdentityRole> roleManager)
         {
             _db = db;
             _userManager = userManager;
@@ -36,6 +42,7 @@ namespace SalesRegister.Controllers
             _roleManager = roleManager;
             _mapper = mapper;
             _fileStorageService = fileStorageService;
+            _configuration = configuration;
         }
 
 
@@ -102,19 +109,48 @@ namespace SalesRegister.Controllers
 
 
         [HttpPost("createUser")]
-        public async Task<IActionResult> CreateUser([FromBody] RegisterModelDTO register)
+        public async Task<ActionResult<AuthenticationResponse>> CreateUser([FromBody] RegisterModelDTO register)
         {
             if (ModelState.IsValid)
             {
-                var staff = new StaffModel();
-                staff.UserName = register.UserName;
-                staff.Email = register.UserName;
+                var staff = new StaffModel
+                {
+                    UserName = register.UserName,
+                    Email = register.UserName
+                };
 
                 var result = await _userManager.CreateAsync(staff, register.Password);
-
+                if (result.Succeeded)
+                {
+                    return BuildToken(register);
+                }
+                else
+                {
+                    return BadRequest(result.Errors);
+                }
 
             }
+           
             return Ok();
+
+        }
+        private AuthenticationResponse BuildToken(RegisterModelDTO register)
+        {
+            var claims = new List<Claim>()
+            {
+                new Claim("email", register.UserName)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration ["keyjwt"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expiration = DateTime.UtcNow.AddYears(1);
+            var token = new JwtSecurityToken(issuer: null, audience: null, claims: claims,
+                expires: expiration, signingCredentials: creds);
+            return new AuthenticationResponse()
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                Expiration = expiration
+            };
 
         }
 
@@ -293,17 +329,17 @@ namespace SalesRegister.Controllers
 
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginModelDTO login)
+        public async Task<ActionResult<AuthenticationResponse>> Login([FromBody] LoginModelDTO login)
         {
 
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var result = await _signInManager.PasswordSignInAsync(login.Email, login.Password, false, lockoutOnFailure: false);
+                    var result = await _signInManager.PasswordSignInAsync(login.Email, login.Password,isPersistent:false, lockoutOnFailure: false);
                     if (result.Succeeded)
                     {
-                        return Ok(new { userName = login.Email });
+                        return BuildToken(login);
                     }
                     else
                     {
@@ -322,6 +358,27 @@ namespace SalesRegister.Controllers
             }
         }
 
+        private AuthenticationResponse BuildToken(LoginModelDTO login)
+        {
+            var claims = new List<Claim>()
+            {
+                new Claim("email", login.Email)
+            };
+
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["keyjwt"]));
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expiration = DateTime.UtcNow.AddYears(1);
+            var token = new JwtSecurityToken(issuer: null, audience: null, claims: claims,
+                expires: expiration, signingCredentials: creds);
+            return new AuthenticationResponse()
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                Expiration = expiration
+            };
+
+        } 
 
 
         [HttpPost("logout")]

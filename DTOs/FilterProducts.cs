@@ -5,12 +5,8 @@ using System.Threading.Tasks;
 
 namespace SalesRegister.DTOs
 {
-    public class TotalModelDTO
+    public class FilterProducts
     {
-        public DateTime Date { get; set; }
-
-        public float Total { get; set; }
-
-
+        public string Product { get; set; }
     }
 }

@@ -18,7 +18,6 @@ namespace SalesRegister.Controllers
 
         public CustomerInvoiceController(ApplicationDbContext db)
         {
-
             _db = db;
         }
 
@@ -40,62 +39,15 @@ namespace SalesRegister.Controllers
                 return NotFound();
             }
             var obj = _db.CustomerInvoice.Find(Id);
-            var customerOrder = _db.CustomerInvoiceDetails.Where(u => u.InvoiceId == obj.Id).Select(u => u.Id).ToList();
-            
 
             if (obj == null)
             {
                 return NotFound();
             }
-            return Ok(new {obj=obj, customerOrder=customerOrder });
+            return Ok(obj);
         }
 
-        [HttpPost]
-
-        public ActionResult Post([FromBody] CustomerInvoiceModelDTO customerInvoiceModel)
-        {
-            if (ModelState.IsValid)
-            {
-                var customer = new CustomerInvoiceModel();
-
-                customer.CustomerName = customerInvoiceModel.CustomerName;
-                   customer.Date = DateTime.Now;
-                
-
-                _db.CustomerInvoice.Add(customer);
-
-                var total = _db.CustomerInvoiceDetails.Where(u => u.InvoiceId == customer.Id).Select(u => u.Amount).ToList();
-                //var invoiceId = _db.CustomerInvoiceDetails.Find(total);
-                customer.Total = total.Sum();
-
-                _db.CustomerInvoice.Update(customer);
-
-                _db.SaveChanges();
-            }
-            return Ok();
-        }
-
-
-        [HttpPut("{id:int}")]
-
-
-        public ActionResult Put(int Id, [FromBody] CustomerInvoiceModel customerInvoiceModel)
-        {
-            if (ModelState.IsValid)
-            {
-                var customer = _db.CustomerInvoice.Find(Id);
-                customer.CustomerName = customerInvoiceModel.CustomerName;
-                customer.Date = DateTime.Now;
-                var total = _db.CustomerInvoiceDetails.Where(u => u.InvoiceId == customer.Id).Select(u => u.Amount).ToList();
-                //var invoiceId = _db.CustomerInvoiceDetails.Find(total);
-                customer.Total = total.Sum();
-
-                _db.CustomerInvoice.Update(customer);
-                _db.SaveChanges();
-
-            }
-            return Ok();
-        }
+       
 
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int Id)

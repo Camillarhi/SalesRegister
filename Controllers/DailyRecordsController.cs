@@ -27,6 +27,7 @@ namespace SalesRegister.Controllers
         {
             IEnumerable<DailyRecordsModel> objList = _db.DailyRecords;
             
+            
             return Ok(objList);
         }
 
@@ -48,62 +49,147 @@ namespace SalesRegister.Controllers
             return Ok(obj);
         }
 
-        [HttpPost]
 
-        public ActionResult Post([FromBody] DailyRecordsModelDTO dailyRecordsModel)
+        [HttpPost("sales")]
+
+        public ActionResult PostInvoice([FromBody] CustomerInvoiceModelDTO customerInvoiceModel)
         {
             if (ModelState.IsValid)
             {
 
-                var records = new CustomerInvoiceDetailModel();
-                
-                   records.Quantity = dailyRecordsModel.Quantity;
+                var record = new CustomerInvoiceModel();
+                var recordDetail = new CustomerInvoiceDetailModel();
+                var records = new List<DailyRecordsModel>();
+                var dailySales = new DailyRecordsModel();
+                var totAmt = new List<float>();
 
-                   records.Product = dailyRecordsModel.Product;
-                    records.Measure = dailyRecordsModel.Measure;
+                record.CustomerName = customerInvoiceModel.CustomerName;
+                record.Date = DateTime.Now;
+                var custName =customerInvoiceModel.CustomerName.Substring(0, 3);
+                var rnd = new Random();
+                int num = rnd.Next(100);
+                var getCompanyName = _db.CompanyName.FirstOrDefault();
+                var companyName = getCompanyName.CompanyName.Substring(0, 3);
+                record.InvoiceId = companyName + custName + num;
 
-
-                var product = _db.Products.Where(u => u.Measure == records.Measure&& u.Product==records.Product).Select(u=>u.Id).FirstOrDefault();
-                var item = _db.Products.Find(product);
-                
-
-                if (item.Product == records.Product&& item.Measure==records.Measure)
+                foreach (var item in customerInvoiceModel.InvoiceDetail)
                 {
-                    records.UnitPrice = item.UnitPrice;
-                    records.Amount = records.UnitPrice * records.Quantity;
+                    recordDetail.Quantity = item.Quantity;
+                    recordDetail.Product = item.Product;
+                    recordDetail.Measure = item.Measure;
+                    recordDetail.Date = record.Date;
+                    recordDetail.InvoiceId = record.InvoiceId;
+                    var unitPrice = _db.Products.Where(u => u.Measure == recordDetail.Measure && u.Product == recordDetail.Product).FirstOrDefault().UnitPrice;
+                    recordDetail.UnitPrice = unitPrice;
+                    recordDetail.Amount = unitPrice * recordDetail.Quantity;
+                    var productsQty = _db.ProductBalances.Where(u => u.Measure == recordDetail.Measure && u.Product == recordDetail.Product).Select(u => u.Id).FirstOrDefault();
+                    var update = _db.ProductBalances.Find(productsQty);
+                    update.Quantity -= recordDetail.Quantity;
 
+                    _db.ProductBalances.Update(update);
+                    record.InvoiceDetail.Add(recordDetail);
+                }
+                for (var i = 0; i < record.InvoiceDetail.Count; i++)
+                {
+                    totAmt.Add(record.InvoiceDetail[i].Amount);
+                }
+                record.Total = totAmt.Sum();
+                foreach (var item in customerInvoiceModel.InvoiceDetail)
+                {
+                    dailySales.Quantity = item.Quantity;
+                    dailySales.Product = item.Product;
+                    dailySales.Measure = item.Measure;
+                    dailySales.Date = DateTime.Now;
+                    var product = _db.Products.Where(u => u.Measure == dailySales.Measure && u.Product == dailySales.Product).FirstOrDefault().UnitPrice;
+                    dailySales.UnitPrice = product;
+                    dailySales.Amount = product * dailySales.Quantity;
+                    records.Add(dailySales);
 
                 }
-
-              //  var productsQty = _db.ProductBalances.Where(u => u.Measure == records.Measure && u.Product == records.Product).Select(u => u.Id).FirstOrDefault();
-              //  var update = _db.ProductBalances.Find(productsQty);
-              //  update.Quantity= update.Quantity - records.Quantity;
-              ////  var updateQty = update.Quantity - records.Quantity;
-
-              //  _db.ProductBalances.Update(update);
-
-                _db.CustomerInvoiceDetails.Add(records);
+                _db.CustomerInvoice.AddRange(record);
+                _db.DailyRecords.AddRange(records);
                 _db.SaveChanges();
             }
             return Ok();
         }
 
-        [HttpPut]
+        //[HttpPost]
 
-        public ActionResult Put(int Id, [FromBody] DailyRecordsModel dailyRecordsModel)
-        {
-            if (ModelState.IsValid)
-            {
-                var records = _db.DailyRecords.Find(Id);
-                records.Measure = dailyRecordsModel.Measure;
-                records.Quantity = dailyRecordsModel.Quantity;
-                records.Amount = records.Quantity * records.UnitPrice;
+        //public ActionResult Post([FromBody] List<DailyRecordsModel> dailyRecordsModel)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
 
-                _db.DailyRecords.Update(records);
-                _db.SaveChanges();
-            }
-            return Ok();
-        }
+        //        var record = new DailyRecordsModel();
+        //        var records = new List<DailyRecordsModel>(); 
+                
+        //        foreach (var item in dailyRecordsModel)
+        //        {
+        //            record.Quantity = item.Quantity;
+        //            record.Product = item.Product;
+        //            record.Measure = item.Measure;
+        //            record.Date = DateTime.Now;
+        //            var product = _db.Products.Where(u => u.Measure == record.Measure && u.Product == record.Product).FirstOrDefault().UnitPrice;
+        //            item.UnitPrice = product;
+        //            item.Amount = product * record.Quantity;
+        //            var productsQty = _db.ProductBalances.Where(u => u.Measure == record.Measure && u.Product == record.Product).Select(u => u.Id).FirstOrDefault();
+        //            var update = _db.ProductBalances.Find(productsQty);
+        //            update.Quantity = update.Quantity - record.Quantity;
+        //            //  var updateQty = update.Quantity - records.Quantity;
+
+        //            _db.ProductBalances.Update(update);
+
+        //            records.Add(item);
+
+        //        }
+                
+        //        //   records.Quantity = dailyRecordsModel.Quantity;
+
+        //        //   records.Product = dailyRecordsModel.Product;
+        //        //    records.Measure = dailyRecordsModel.Measure;
+
+
+        //        //var products = _db.Products.Where(u => u.Measure == records.Measure&& u.Product==records.Product).FirstOrDefault();
+        //        //var item = _db.Products.Find(products);
+                
+
+        //        //if (item.Product == records.Product&& item.Measure==records.Measure)
+        //        //{
+        //        //    records.UnitPrice = item.UnitPrice;
+        //        //    records.Amount = records.UnitPrice * records.Quantity;
+
+
+        //        //}
+
+        //      //  var productsQty = _db.ProductBalances.Where(u => u.Measure == records.Measure && u.Product == records.Product).Select(u => u.Id).FirstOrDefault();
+        //      //  var update = _db.ProductBalances.Find(productsQty);
+        //      //  update.Quantity= update.Quantity - records.Quantity;
+        //      ////  var updateQty = update.Quantity - records.Quantity;
+
+        //      //  _db.ProductBalances.Update(update);
+
+        //        _db.DailyRecords.AddRange(records);
+        //        _db.SaveChanges();
+        //    }
+        //    return Ok();
+        //}
+
+        //[HttpPut]
+
+        //public ActionResult Put(int Id, [FromBody] DailyRecordsModel dailyRecordsModel)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var records = _db.DailyRecords.Find(Id);
+        //        records.Measure = dailyRecordsModel.Measure;
+        //        records.Quantity = dailyRecordsModel.Quantity;
+        //        records.Amount = records.Quantity * records.UnitPrice;
+
+        //        _db.DailyRecords.Update(records);
+        //        _db.SaveChanges();
+        //    }
+        //    return Ok();
+        //}
 
         [HttpDelete]
 

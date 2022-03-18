@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using IronBarCode;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SalesRegister.ApplicationDbContex;
@@ -16,6 +18,7 @@ namespace SalesRegister.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+  //  [Authorize(Roles = "Admin")]
     public class ProductsController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
@@ -31,11 +34,20 @@ namespace SalesRegister.Controllers
             _db = db;
         }
 
-        [HttpGet]
 
+        [HttpGet]
+     //   [AllowAnonymous]
         public ActionResult<ProductsModel> GetAll()
         {
             IEnumerable<ProductsModel> objList = _db.Products;
+            return Ok(objList);
+        }
+
+        [HttpGet("getProduct")]
+        //   [AllowAnonymous]
+        public ActionResult<ProductsModel> GetProduct()
+        {
+            var objList = _db.Products.Select(x => x.Product).Distinct().ToList();
             return Ok(objList);
         }
 
@@ -59,21 +71,58 @@ namespace SalesRegister.Controllers
         }
 
 
+        [HttpGet("productname")]
+    //    [AllowAnonymous]
+
+        public ActionResult GetMeasure(string Name)
+         {
+            if (Name == null)
+            {
+                return NotFound();
+            }
+            var obj = _db.Products.Where(x => x.Product == Name).Select(x => new { x.Measure, x.UnitPrice }).ToList();
+
+
+            if (obj == null)
+            {
+                return NotFound();
+            }
+            return Ok(obj);
+        }
+
+       
+        [HttpGet("filter")]
+        public async Task<ActionResult<List<ProductsModelDTO>>> Filter([FromQuery] FilterProducts filterProducts)
+        {
+            var productQuerable = _db.Products.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filterProducts.Product))
+            {
+                productQuerable = productQuerable.Where(x => x.Product.Contains(filterProducts.Product));
+
+            }
+           // await HttpContext.InsertParameterPaginationInHeader(productQuerable);
+            var products =  productQuerable.OrderBy(x => x.Product).ToList();
+            return Ok(products);
+          //  return Mapper.Map<List<ProductsModelDTO>>(products);
+        }
+
         [HttpPost]
 
         public ActionResult Post([FromBody] ProductsModelDTO productsModel)
         {
             if (ModelState.IsValid)
             {
-                var product = new ProductsModel();
+                var product = new ProductsModel
+                {
+                    ProductCode = productsModel.ProductCode,
+                    Product = (productsModel.Product).ToUpper(),
+                    UnitPrice = productsModel.UnitPrice,
+                    Measure = productsModel.Measure
+                };
 
-                product.ProductCode = productsModel.ProductCode;
-                product.Product = (productsModel.Product).ToUpper();
-                product.UnitPrice = productsModel.UnitPrice;
-                product.Measure = productsModel.Measure;
-                
 
-               
+
 
 
                 // product.BarcodeImage = await _fileStorageService.SaveFile(containerName, productsModel.BarcodeImage);
