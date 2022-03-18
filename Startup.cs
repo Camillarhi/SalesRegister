@@ -38,7 +38,8 @@ namespace SalesRegister
             var sqlConnectionString = Configuration["ConnectionStrings:SalesConnection"];
 
             services.AddDbContext<ApplicationDbContext>(options =>
-               options.UseNpgsql(sqlConnectionString)
+               //options.UseNpgsql(sqlConnectionString)
+               options.UseSqlServer(sqlConnectionString)
            );
 
             services.AddScoped<IFileStorageService, InAppStorageService>();
