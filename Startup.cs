@@ -120,7 +120,8 @@ namespace SalesRegister
 
             //services.AddSingleton<GeometryFactory>(NtsGeometryServices
             //    .Instance.CreateGeometryFactory(srid: 4326));
-            services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
+            var applicationInsight = Configuration["ApplicationInsights:ConnectionString"];
+            services.AddApplicationInsightsTelemetry(applicationInsight);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
