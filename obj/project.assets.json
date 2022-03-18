@@ -7819,11 +7819,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\TASKS\\SalesRegidter\\SalesRegister\\SalesRegister.csproj",
+      "projectUniqueName": "C:\\TASKS\\SalesRegister\\SalesRegister\\SalesRegister.csproj",
       "projectName": "SalesRegister",
-      "projectPath": "C:\\TASKS\\SalesRegidter\\SalesRegister\\SalesRegister.csproj",
+      "projectPath": "C:\\TASKS\\SalesRegister\\SalesRegister\\SalesRegister.csproj",
       "packagesPath": "C:\\Users\\Camillarhi\\.nuget\\packages\\",
-      "outputPath": "C:\\TASKS\\SalesRegidter\\SalesRegister\\obj\\",
+      "outputPath": "C:\\TASKS\\SalesRegister\\SalesRegister\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",

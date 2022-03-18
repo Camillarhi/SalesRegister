@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "oh4pbAAlrsgMSxldcCYi4Rt1Dqm7UHmrkp1DtYTI/vZdmwF/FxW3f3QDw2iqidsr5Gpe5Ss3CSD5FEvlBLQUCA==",
+  "dgSpecHash": "Gx/STtf2heO1xLPXIXQ6PI0D8BFHBdyFOPXasPzCiXipf7N5rd5ltiypY4ydsnz3io5PCsZdBfRnC34yxNdrLg==",
   "success": true,
-  "projectFilePath": "C:\\TASKS\\SalesRegidter\\SalesRegister\\SalesRegister.csproj",
+  "projectFilePath": "C:\\TASKS\\SalesRegister\\SalesRegister\\SalesRegister.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Camillarhi\\.nuget\\packages\\automapper\\10.1.1\\automapper.10.1.1.nupkg.sha512",
     "C:\\Users\\Camillarhi\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\8.1.1\\automapper.extensions.microsoft.dependencyinjection.8.1.1.nupkg.sha512",
