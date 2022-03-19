@@ -22,15 +22,10 @@ namespace SalesRegister.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
-        private readonly IMapper _mapper;
-        private readonly IFileStorageService _fileStorageService;
-        private readonly string containerName = "Product";
 
-        public ProductsController(ApplicationDbContext db , IMapper mapper,IFileStorageService fileStorageService
+        public ProductsController(ApplicationDbContext db
             )
         {
-            _fileStorageService = fileStorageService;
-            _mapper = mapper;
             _db = db;
         }
 
@@ -91,21 +86,21 @@ namespace SalesRegister.Controllers
         }
 
        
-        [HttpGet("filter")]
-        public async Task<ActionResult<List<ProductsModelDTO>>> Filter([FromQuery] FilterProducts filterProducts)
-        {
-            var productQuerable = _db.Products.AsQueryable();
+        //[HttpGet("filter")]
+        //public async Task<ActionResult<List<ProductsModelDTO>>> Filter([FromQuery] FilterProducts filterProducts)
+        //{
+        //    var productQuerable = _db.Products.AsQueryable();
 
-            if (!string.IsNullOrEmpty(filterProducts.Product))
-            {
-                productQuerable = productQuerable.Where(x => x.Product.Contains(filterProducts.Product));
+        //    if (!string.IsNullOrEmpty(filterProducts.Product))
+        //    {
+        //        productQuerable = productQuerable.Where(x => x.Product.Contains(filterProducts.Product));
 
-            }
-           // await HttpContext.InsertParameterPaginationInHeader(productQuerable);
-            var products =  productQuerable.OrderBy(x => x.Product).ToList();
-            return Ok(products);
-          //  return Mapper.Map<List<ProductsModelDTO>>(products);
-        }
+        //    }
+        //   // await HttpContext.InsertParameterPaginationInHeader(productQuerable);
+        //    var products =  productQuerable.OrderBy(x => x.Product).ToList();
+        //    return Ok(products);
+        //  //  return Mapper.Map<List<ProductsModelDTO>>(products);
+        //}
 
         [HttpPost]
 

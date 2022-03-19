@@ -22,5 +22,7 @@ namespace SalesRegister
                 {
                     webBuilder.UseStartup<Startup>();
                 });
+
+
     }
 }
