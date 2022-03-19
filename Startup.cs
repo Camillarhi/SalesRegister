@@ -38,7 +38,35 @@ namespace SalesRegister
             var sqlConnectionString = Configuration["ConnectionStrings:SalesConnection"];
 
             services.AddDbContext<ApplicationDbContext>(options =>
-               options.UseNpgsql(sqlConnectionString)
+            {
+                var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                string connStr;
+
+                if (env == "Development")
+                {
+                    connStr = Configuration["ConnectionStrings:SalesConnection"];
+                }
+                else
+                {
+                    // Use connection string provided at runtime by Heroku.
+                    var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+                    connUrl = connUrl.Replace("postgres://", string.Empty);
+                    var userPassSide = connUrl.Split("@")[0];
+                    var hostSide = connUrl.Split("@")[1];
+
+                    var connUser = userPassSide.Split(":")[0];
+                    var connPass = userPassSide.Split(":")[1];
+                    var connHost = hostSide.Split("/")[0];
+                    var connDb = hostSide.Split("/")[1].Split("?")[0];
+
+                    connStr = $"server={connHost};Uid={connUser};Pwd={connPass};Database={connDb}";
+                }
+
+                options.UseNpgsql(connStr);
+            }
+
+               //options.UseNpgsql(sqlConnectionString)
            );
 
             services.AddScoped<IFileStorageService, InAppStorageService>();
