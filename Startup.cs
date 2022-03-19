@@ -55,12 +55,12 @@ namespace SalesRegister
                     var userPassSide = connUrl.Split("@")[0];
                     var hostSide = connUrl.Split("@")[1];
 
-                    var connUser = userPassSide.Split(":")[0];
-                    var connPass = userPassSide.Split(":")[1];
-                    var connHost = hostSide.Split("/")[0];
-                    var connDb = hostSide.Split("/")[1].Split("?")[0];
+                    var user = userPassSide.Split(":")[0];
+                    var password = userPassSide.Split(":")[1];
+                    var host = hostSide.Split("/")[0];
+                    var database = hostSide.Split("/")[1].Split("?")[0];
 
-                    connStr = $"server={connHost};Uid={connUser};Pwd={connPass};Database={connDb}";
+                    connStr = $"Host={host};Database={database};Username={user};Password={password};SSL Mode=Require;Trust Server Certificate=true";
                 }
 
                 options.UseNpgsql(connStr);
@@ -143,6 +143,7 @@ namespace SalesRegister
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //dataContext.Database.Migrate();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
