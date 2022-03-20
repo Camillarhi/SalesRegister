@@ -38,36 +38,36 @@ namespace SalesRegister
             var sqlConnectionString = Configuration["ConnectionStrings:SalesConnection"];
 
             services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-                string connStr;
+            //{
+            //    var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            //    string connStr;
 
-                if (env == "Development")
-                {
-                    connStr = Configuration["ConnectionStrings:SalesConnection"];
-                }
-                else
-                {
-                    // Use connection string provided at runtime by Heroku.
-                    var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+            //    if (env == "Development")
+            //    {
+            //        connStr = Configuration["ConnectionStrings:SalesConnection"];
+            //    }
+            //    else
+            //    {
+            //        // Use connection string provided at runtime by Heroku.
+            //        var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
-                    connUrl = connUrl.Replace("postgres://", string.Empty);
-                    var userPassSide = connUrl.Split("@")[0];
-                    var hostSide = connUrl.Split("@")[1];
+            //        connUrl = connUrl.Replace("postgres://", string.Empty);
+            //        var userPassSide = connUrl.Split("@")[0];
+            //        var hostSide = connUrl.Split("@")[1];
 
-                    var user = userPassSide.Split(":")[0];
-                    var password = userPassSide.Split(":")[1];
-                    var host = hostSide.Split("/")[0];
-                    var database = hostSide.Split("/")[1].Split("?")[0];
+            //        var user = userPassSide.Split(":")[0];
+            //        var password = userPassSide.Split(":")[1];
+            //        var host = hostSide.Split("/")[0];
+            //        var database = hostSide.Split("/")[1].Split("?")[0];
 
-                    connStr = $"Host={host};Database={database};Username={user};Password={password};SSL Mode=Require;Trust Server Certificate=true";
-                }
+            //        connStr = $"Host={host};Database={database};Username={user};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+            //    }
 
-                options.UseNpgsql(connStr);
-            }
-
+            //    options.UseNpgsql(connStr);
+            //}
+            options.UseSqlServer(Configuration.GetConnectionString("SalesConnection")
                //options.UseNpgsql(sqlConnectionString)
-           );
+           ));
 
             services.AddScoped<IFileStorageService, InAppStorageService>();
             services.AddAutoMapper(typeof(Startup));
@@ -147,10 +147,10 @@ namespace SalesRegister
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SalesRegister v1"));
+                
             }
-
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SalesRegister v1"));
             app.UseHttpsRedirection();
 
             app.UseRouting();

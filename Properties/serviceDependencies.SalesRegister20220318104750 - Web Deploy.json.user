@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "identityapp1": {
+      "restored": true,
+      "restoreTime": "2022-03-19T23:20:38.6242454Z"
+    },
+    "mssql1": {
+      "restored": true,
+      "restoreTime": "2022-03-19T23:23:54.2598123Z"
+    }
+  },
+  "parameters": {
+    "mssql1.subscriptionId": {
+      "Name": "mssql1.subscriptionId",
+      "Type": "subscription",
+      "Value": "a08205b3-3499-46a7-a504-62a3699774ec"
+    },
+    "mssql1.resourceGroupName": {
+      "Name": "mssql1.resourceGroupName",
+      "Type": "resourceGroup",
+      "Value": "SalesRegister20220318104223ResourceGroup"
+    }
+  }
+}

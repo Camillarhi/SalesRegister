@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<sitemanifest>
+  <IisApp path="C:\TASKS\SalesRegister\SalesRegister\obj\Release\net5.0\PubTmp\Out\" />
+  <dbfullsql path="C:\TASKS\SalesRegister\SalesRegister\obj\Release\net5.0\PubTmp\EFSQLScripts\SalesRegister.ApplicationDbContex.ApplicationDbContext.sql" />
+</sitemanifest>
