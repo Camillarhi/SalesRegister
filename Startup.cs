@@ -131,12 +131,17 @@ namespace SalesRegister
 
             services.AddCors(options =>
             {
-                var frontendURL = Configuration.GetValue<string>("frontend_url");
-                options.AddDefaultPolicy(builder =>
-                {
-                    builder.WithOrigins(frontendURL).AllowAnyMethod().AllowAnyHeader()
-                        .WithExposedHeaders(new string[] { "totalAmountOfRecords" });
-                });
+                options.AddPolicy("AllowAll", builder =>
+                builder.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+                //var frontendURL = Configuration.GetValue<string>("frontend_url");
+                //options.AddDefaultPolicy(builder =>
+                //{
+                //    builder.WithOrigins(frontendURL).AllowAnyMethod().AllowAnyHeader()
+                //        .WithExposedHeaders(new string[] { "totalAmountOfRecords" });
+                //});
+
             });
         }
 
@@ -151,11 +156,13 @@ namespace SalesRegister
             }
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SalesRegister v1"));
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
-            app.UseCors();
+            app.UseCors("AllowAll");
+
             app.UseAuthentication();
 
             app.UseAuthorization();
