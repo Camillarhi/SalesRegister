@@ -8,9 +8,8 @@ namespace SalesRegister.Model
 {
     public class CustomerInvoiceModel
     {
-
-        [Key]
-        public int Id { get; set; }
+        [Required]
+        public string Id { get; set; }
 
         [Required]
         public string CustomerName { get; set; }
@@ -19,6 +18,8 @@ namespace SalesRegister.Model
         public string InvoiceId { get; set; }
 
         public DateTime Date { get; set; }
+
+        public string AdminId { get; set; }
 
         public float Total { get; set; }
 

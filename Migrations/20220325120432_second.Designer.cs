@@ -10,8 +10,8 @@ using SalesRegister.ApplicationDbContex;
 namespace SalesRegister.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220320004040_initial")]
-    partial class initial
+    [Migration("20220325120432_second")]
+    partial class second
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -153,10 +153,12 @@ namespace SalesRegister.Migrations
 
             modelBuilder.Entity("SalesRegister.Model.CompanyModel", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AdminId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("CompanyName")
                         .IsRequired()
@@ -169,16 +171,14 @@ namespace SalesRegister.Migrations
 
             modelBuilder.Entity("SalesRegister.Model.CustomerInvoiceDetailModel", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<float>("Amount")
                         .HasColumnType("real");
 
-                    b.Property<int?>("CustomerInvoiceModelId")
-                        .HasColumnType("integer");
+                    b.Property<string>("CustomerInvoiceModelId")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp without time zone");
@@ -191,7 +191,15 @@ namespace SalesRegister.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("MeasureId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Product")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProductId")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -210,10 +218,8 @@ namespace SalesRegister.Migrations
 
             modelBuilder.Entity("SalesRegister.Model.CustomerInvoiceModel", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<string>("CustomerName")
                         .IsRequired()
@@ -269,87 +275,57 @@ namespace SalesRegister.Migrations
                     b.ToTable("DailyRecords");
                 });
 
-            modelBuilder.Entity("SalesRegister.Model.ProductBalanceModel", b =>
+            modelBuilder.Entity("SalesRegister.Model.ProductMeasureModel", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<float>("CostPrice")
+                        .HasColumnType("real");
 
                     b.Property<string>("Measure")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Product")
+                    b.Property<string>("ProductId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ProductCode")
-                        .IsRequired()
+                    b.Property<string>("ProductsModelId")
                         .HasColumnType("text");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ProductBalances");
-                });
-
-            modelBuilder.Entity("SalesRegister.Model.ProductBalanceUpdateModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Measure")
-                        .IsRequired()
+                    b.Property<string>("QtyPerMeasure")
                         .HasColumnType("text");
 
-                    b.Property<string>("Product")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ProductCode")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ProductBalanceUpdates");
-                });
-
-            modelBuilder.Entity("SalesRegister.Model.ProductsModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<string>("Measure")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Product")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ProductCode")
-                        .IsRequired()
+                    b.Property<string>("Quantity")
                         .HasColumnType("text");
 
                     b.Property<float>("UnitPrice")
                         .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductsModelId");
+
+                    b.ToTable("ProductMeasureModel");
+                });
+
+            modelBuilder.Entity("SalesRegister.Model.ProductsModel", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AdminId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProductCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -385,6 +361,9 @@ namespace SalesRegister.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CreatedById")
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("DateOfBirth")
@@ -455,6 +434,68 @@ namespace SalesRegister.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("SalesRegister.Model.StockBalanceModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("AdminId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Measure")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Product")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProductCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StockBalances");
+                });
+
+            modelBuilder.Entity("SalesRegister.Model.StockBalanceUpdateModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("AdminId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Measure")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Product")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProductCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StockBalanceUpdates");
                 });
 
             modelBuilder.Entity("SalesRegister.Model.TotalModel", b =>
@@ -533,9 +574,21 @@ namespace SalesRegister.Migrations
                         .HasForeignKey("CustomerInvoiceModelId");
                 });
 
+            modelBuilder.Entity("SalesRegister.Model.ProductMeasureModel", b =>
+                {
+                    b.HasOne("SalesRegister.Model.ProductsModel", null)
+                        .WithMany("ProductMeasures")
+                        .HasForeignKey("ProductsModelId");
+                });
+
             modelBuilder.Entity("SalesRegister.Model.CustomerInvoiceModel", b =>
                 {
                     b.Navigation("InvoiceDetail");
+                });
+
+            modelBuilder.Entity("SalesRegister.Model.ProductsModel", b =>
+                {
+                    b.Navigation("ProductMeasures");
                 });
 #pragma warning restore 612, 618
         }

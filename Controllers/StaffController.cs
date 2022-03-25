@@ -33,6 +33,7 @@ namespace SalesRegister.Controllers
         RoleManager<IdentityRole> _roleManager;
 
 
+
         public StaffController(ApplicationDbContext db, IFileStorageService fileStorageService, IMapper mapper, UserManager<StaffModel> userManager, 
        SignInManager<StaffModel> signInManager, IConfiguration configuration, RoleManager<IdentityRole> roleManager)
         {
@@ -47,12 +48,14 @@ namespace SalesRegister.Controllers
 
 
 
-        [HttpGet]
-        public ActionResult<StaffModelDTO> GetAll()
+        [HttpGet("staff")]
+        public async Task<ActionResult<StaffModelDTO>> GetAll()
         {
             try
             {
-                var staffs = (from user in _db.Users
+                var currentUser = await _userManager.GetUserAsync(User);
+                //if (currentUser == null) return Challenge();
+                var staffs = (from user in _db.Users.Where(x => x.CreatedById == currentUser.Id)
                               select new StaffModel
                               {
                                   FirstName = user.FirstName,
@@ -64,8 +67,6 @@ namespace SalesRegister.Controllers
                                   ProfilePicture=user.ProfilePicture,
                                   DateOfBirth=user.DateOfBirth,
                                   PhoneNumber=user.PhoneNumber
-                                  
-                                  
                               }
                          ).ToList();
                 
@@ -81,16 +82,38 @@ namespace SalesRegister.Controllers
             }
         }
 
-        [HttpGet("{Id}")]
+        [HttpGet("staff/{Id}")]
         public async Task<IActionResult> Get(string Id)
         {
             try
             {
-                var staff = _db.Users.Where(u => u.StaffId == Id).Select(u => u.Id).FirstOrDefault();
-
+                var currentUser = await _userManager.GetUserAsync(User);
+                var staff = _db.Users.Where(u =>u.CreatedById == currentUser.Id && u.Id == Id).Select(u => u.Id).FirstOrDefault();
                 var users = await _userManager.FindByIdAsync(staff);
+                if (staff == null)
+                {
+                    return NotFound();
+                }
+                //return _mapper.Map<StaffModelDTO>(users);
+                return Ok(users);
+            }
 
+            catch (Exception ex)
+            {
 
+                return BadRequest(ex);
+            }
+
+        }
+
+        [HttpGet("admin/{Id}")]
+        public async Task<IActionResult> GetAdmin(string Id)
+        {
+            try
+            {
+                var currentUser = await _userManager.GetUserAsync(User);
+                var staff = _db.Users.Where(u => u.Id == currentUser.Id && u.Id == Id).Select(u => u.Id).FirstOrDefault();
+                var users = await _userManager.FindByIdAsync(staff);
                 if (staff == null)
                 {
                     return NotFound();
@@ -108,7 +131,7 @@ namespace SalesRegister.Controllers
         }
 
 
-        [HttpPost("createUser")]
+        [HttpPost("createadmin")]
         public async Task<ActionResult<AuthenticationResponse>> CreateUser([FromBody] RegisterModelDTO register)
         {
             if (ModelState.IsValid)
@@ -149,23 +172,23 @@ namespace SalesRegister.Controllers
             return new AuthenticationResponse()
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
+                 Email= register.UserName,
                 Expiration = expiration
             };
 
         }
 
 
-        [HttpPost("register")]
+        [HttpPost("setupadmin")]
 
-        public async Task<IActionResult> Register([FromForm] StaffModelDTO model)
-
+        public async Task<IActionResult> Register([FromForm] AdminFormDTO model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
                     var staff = _mapper.Map<StaffModel>(model);
-
+                    var currentUser = await _userManager.GetUserAsync(User);
                     var newStaff = _db.Users.Where(u => u.UserName == model.UserName).Select(u => u.Id).FirstOrDefault();
                     var newStaff2 = await _userManager.FindByIdAsync(newStaff);
                     newStaff2.DateOfBirth = model.DateOfBirth;
@@ -174,27 +197,17 @@ namespace SalesRegister.Controllers
                     newStaff2.LastName = model.LastName;
                     newStaff2.PhoneNumber = model.PhoneNumber;
                     newStaff2.Address = model.Address;
-                   
-
-                    var getCompanyName = _db.CompanyName.FirstOrDefault();
-                    var companyName = getCompanyName.CompanyName.Substring(0, 3);
-
-                    StaffModel user = new StaffModel();
-
-
+                    var user = new StaffModel();
                     var departmentName = model.Department.Substring(0, 3);
                     var rnd = new Random();
                     int num = rnd.Next(50);
-
-
-                    newStaff2.StaffId = companyName + departmentName + num;
-
+                    newStaff2.StaffId = departmentName + num;
+                    newStaff2.CreatedById = newStaff;
 
                     if (model.ProfilePicture != null)
                     {
                         newStaff2.ProfilePicture = await _fileStorageService.SaveFile(containerName, model.ProfilePicture);
                     }
-
                     var result = await _userManager.UpdateAsync(newStaff2);
                     if (result.Succeeded)
                     {
@@ -202,6 +215,58 @@ namespace SalesRegister.Controllers
                         await _userManager.AddToRoleAsync(newStaff2, model.Department);
                         await _db.SaveChangesAsync();
 
+                    }
+                }
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex);
+            }
+        }
+
+        [HttpPost("registerstaff")]
+
+        public async Task<IActionResult> RegisterStaff([FromForm] StaffModelDTO model)
+
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var currentUser = await _userManager.GetUserAsync(User);
+                    var staff = new StaffModel
+                    {
+                        UserName = model.UserName,
+                        Email = model.UserName,
+                        DateOfBirth = model.DateOfBirth,
+                        FirstName = model.FirstName,
+                        Gender = model.Gender,
+                        LastName = model.LastName,
+                        PhoneNumber = model.PhoneNumber,
+                        Address = model.Address,
+                        CreatedById = currentUser.Id
+                    };
+                    var getCompanyName = _db.CompanyName.Where(x => x.AdminId == currentUser.Id).Select(x=>x.CompanyName).FirstOrDefault();
+                    var companyName = getCompanyName.Substring(0, 3);
+                    var departmentName = model.Department.Substring(0, 3);
+                    var rnd = new Random();
+                    int num = rnd.Next(50);
+                    staff.StaffId = companyName + departmentName + num;
+                    if (model.ProfilePicture != null)
+                    {
+                        staff.ProfilePicture = await _fileStorageService.SaveFile(containerName, model.ProfilePicture);
+                    }
+                    var result = await _userManager.CreateAsync(staff, model.Password);
+                    if (result.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(staff, model.Department);
+                        await _db.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        return BadRequest(result.Errors);
                     }
 
                 }
@@ -223,28 +288,19 @@ namespace SalesRegister.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                   var staff = _mapper.Map<StaffModel>(model);
-
-                    var getCompanyName = _db.CompanyName.FirstOrDefault();
-                    var companyName = getCompanyName.CompanyName.Substring(0, 3);
-
-
-
+                    var currentUser = await _userManager.GetUserAsync(User);
+                    var getCompanyName = _db.CompanyName.Where(x => x.AdminId == currentUser.Id).Select(x => x.CompanyName).FirstOrDefault();
+                    var companyName = getCompanyName.Substring(0, 3);
                     var departmentName = model.Department.Substring(0, 3);
                     var rnd = new Random();
                     int num = rnd.Next(50);
-
-
                     //to get the Id of the staff from the database
                     var del = _db.Users
                            .Where(u => u.StaffId == Id)
                            .Select(u => u.Id)
                            .FirstOrDefault();
-
-
                     //get User Data from del (using the Id to get the column)
                     var users = await _userManager.FindByIdAsync(del);
-
                     users.DateOfBirth = model.DateOfBirth;
                     users.FirstName = model.FirstName;
                     users.LastName = model.LastName;
@@ -252,23 +308,14 @@ namespace SalesRegister.Controllers
                     users.PhoneNumber = model.PhoneNumber;
                     users.Address = model.Address;
                     
-                    users.StaffId = companyName + departmentName + num;
-
-
-
                     if (model.ProfilePicture != null)
                     {
-                        staff.ProfilePicture = await _fileStorageService.SaveFile(containerName, model.ProfilePicture);
+                        users.ProfilePicture = await _fileStorageService.SaveFile(containerName, model.ProfilePicture);
                     }
-
                     //update the column with the new information
                     var result = await _userManager.UpdateAsync(users);
                     var role = await _userManager.GetRolesAsync(users);
-
                     await _userManager.RemoveFromRolesAsync(users, role);
-
-
-
                     if (result.Succeeded)
                     {
                         await _userManager.AddToRoleAsync(users, model.Department);
@@ -286,34 +333,23 @@ namespace SalesRegister.Controllers
 
         }
 
-
         [HttpPut("UpdateStaffLoginInfo")]
-        public async Task<IActionResult> EditLoginInfo(string Email, [FromForm] RegisterModelDTO register)
+        public async Task<IActionResult> EditLoginInfo( [FromForm] RegisterModelDTO register)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var user = new RegisterModel();
-                    var staff = new StaffModel();
-
+                    var currentUser = await _userManager.GetUserAsync(User);
+                   // var staff = new StaffModel();
                     var editPassword = _db.Users
-                              .Where(u => u.UserName == Email)
-                              .Select(u => u.Id)
+                              .Where(u => u.UserName == register.UserName && u.CreatedById == currentUser.Id)
                               .FirstOrDefault();
-
-
-                    var users = _userManager.FindByIdAsync(editPassword);
-
-
-
+                  //  var users = _userManager.FindByIdAsync(editPassword);
                     //var result = await _userManager.UpdateAsync(register);
-
-                    await _userManager.RemovePasswordAsync(staff);
-                    await _userManager.AddPasswordAsync(staff, "newpassword");
-
-
-
+                    await _userManager.RemovePasswordAsync(editPassword);
+                    await _userManager.AddPasswordAsync(editPassword, register.Password);
+                    // await _userManager.AddPasswordAsync(staff, "newpassword");
 
                 }
                 return Ok();
@@ -339,7 +375,13 @@ namespace SalesRegister.Controllers
                     var result = await _signInManager.PasswordSignInAsync(login.Email, login.Password,isPersistent:false, lockoutOnFailure: false);
                     if (result.Succeeded)
                     {
-                        return BuildToken(login);
+                        var user = await _userManager.FindByEmailAsync(login.Email);
+                        var logedIn = new AuthenticationResponse
+                        {
+                            Email = user.Email,
+                            Id = user.Id,
+                        };
+                        return BuildToken(logedIn);
                     }
                     else
                     {
@@ -358,7 +400,7 @@ namespace SalesRegister.Controllers
             }
         }
 
-        private AuthenticationResponse BuildToken(LoginModelDTO login)
+        private AuthenticationResponse BuildToken(AuthenticationResponse login)
         {
             var claims = new List<Claim>()
             {
@@ -375,6 +417,8 @@ namespace SalesRegister.Controllers
             return new AuthenticationResponse()
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
+                Email= login.Email,
+                Id=login.Id,
                 Expiration = expiration
             };
 
@@ -393,7 +437,7 @@ namespace SalesRegister.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("reset-password-admin")]
-        public async Task<IActionResult> resetPasswordForAdmin([FromForm] RegisterModelDTO reset)
+        public async Task<IActionResult> ResetPasswordForAdmin([FromForm] RegisterModelDTO reset)
         {
             var user = await _userManager.FindByEmailAsync(reset.UserName);
             if (user == null)
@@ -418,7 +462,6 @@ namespace SalesRegister.Controllers
                     errors.Add(error.Description);
                 }
                 return StatusCode(StatusCodes.Status500InternalServerError);
-
             }
             await _userManager.DeleteAsync(user);
             await _db.SaveChangesAsync();
@@ -426,7 +469,7 @@ namespace SalesRegister.Controllers
         }
 
 
-        [HttpDelete("{id}")]
+        [HttpDelete("staff/{id}")]
         public async Task<IActionResult> Delete(string Id)
         {
             if (string.IsNullOrEmpty(Id))
@@ -436,19 +479,13 @@ namespace SalesRegister.Controllers
 
             try
             {
-
-
+                var currentUser = await _userManager.GetUserAsync(User);
                 var del = _db.Users
-                            .Where(u => u.StaffId == Id)
+                            .Where(u => u.CreatedById == currentUser.Id && u.Id == Id)
                             .Select(u => u.Id)
                             .FirstOrDefault();
-
-
                 //get User Data from del
                  var user = await _userManager.FindByIdAsync(Id);
-
-
-
                 if (del == null)
                 {
                     return NotFound();
@@ -460,11 +497,7 @@ namespace SalesRegister.Controllers
             }
             catch (Exception ex)
             {
-
                 return BadRequest(ex);
-
-
-
             }
         }
 

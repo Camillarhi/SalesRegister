@@ -17,7 +17,16 @@ namespace SalesRegister.DTOs
         public string Product { get; set; }
 
         [Required]
+        public string ProductId { get; set; }
+
+        [Required]
+        public string ProductCode { get; set; }
+
+        [Required]
         public string Measure { get; set; }
+
+        [Required]
+        public string MeasureId { get; set; }
 
         [Required]
         public int Quantity { get; set; }

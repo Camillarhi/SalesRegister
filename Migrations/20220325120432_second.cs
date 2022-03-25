@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace SalesRegister.Migrations
 {
-    public partial class initial : Migration
+    public partial class second : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -34,6 +34,7 @@ namespace SalesRegister.Migrations
                     Address = table.Column<string>(type: "text", nullable: true),
                     ProfilePicture = table.Column<string>(type: "text", nullable: true),
                     StaffId = table.Column<string>(type: "text", nullable: true),
+                    CreatedById = table.Column<string>(type: "text", nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -58,9 +59,9 @@ namespace SalesRegister.Migrations
                 name: "CompanyName",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CompanyName = table.Column<string>(type: "text", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    CompanyName = table.Column<string>(type: "text", nullable: false),
+                    AdminId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -71,8 +72,7 @@ namespace SalesRegister.Migrations
                 name: "CustomerInvoice",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<string>(type: "text", nullable: false),
                     CustomerName = table.Column<string>(type: "text", nullable: false),
                     InvoiceId = table.Column<string>(type: "text", nullable: false),
                     Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
@@ -116,53 +116,51 @@ namespace SalesRegister.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductBalances",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ProductCode = table.Column<string>(type: "text", nullable: false),
-                    Product = table.Column<string>(type: "text", nullable: false),
-                    Measure = table.Column<string>(type: "text", nullable: false),
-                    Quantity = table.Column<int>(type: "integer", nullable: false),
-                    Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProductBalances", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProductBalanceUpdates",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ProductCode = table.Column<string>(type: "text", nullable: false),
-                    Product = table.Column<string>(type: "text", nullable: false),
-                    Measure = table.Column<string>(type: "text", nullable: false),
-                    Quantity = table.Column<int>(type: "integer", nullable: false),
-                    Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProductBalanceUpdates", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Products",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<string>(type: "text", nullable: false),
                     ProductCode = table.Column<string>(type: "text", nullable: false),
-                    Product = table.Column<string>(type: "text", nullable: false),
-                    Measure = table.Column<string>(type: "text", nullable: false),
-                    UnitPrice = table.Column<float>(type: "real", nullable: false)
+                    ProductName = table.Column<string>(type: "text", nullable: false),
+                    AdminId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Products", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StockBalances",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ProductCode = table.Column<string>(type: "text", nullable: false),
+                    Product = table.Column<string>(type: "text", nullable: false),
+                    Measure = table.Column<string>(type: "text", nullable: false),
+                    Quantity = table.Column<int>(type: "integer", nullable: false),
+                    AdminId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StockBalances", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StockBalanceUpdates",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ProductCode = table.Column<string>(type: "text", nullable: false),
+                    Product = table.Column<string>(type: "text", nullable: false),
+                    Measure = table.Column<string>(type: "text", nullable: false),
+                    Quantity = table.Column<int>(type: "integer", nullable: false),
+                    AdminId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StockBalanceUpdates", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -289,16 +287,17 @@ namespace SalesRegister.Migrations
                 name: "CustomerInvoiceDetailModel",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<string>(type: "text", nullable: false),
                     InvoiceId = table.Column<string>(type: "text", nullable: false),
                     Product = table.Column<string>(type: "text", nullable: false),
+                    ProductId = table.Column<string>(type: "text", nullable: false),
                     Measure = table.Column<string>(type: "text", nullable: false),
+                    MeasureId = table.Column<string>(type: "text", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
                     UnitPrice = table.Column<float>(type: "real", nullable: false),
                     Amount = table.Column<float>(type: "real", nullable: false),
                     Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    CustomerInvoiceModelId = table.Column<int>(type: "integer", nullable: true)
+                    CustomerInvoiceModelId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -307,6 +306,30 @@ namespace SalesRegister.Migrations
                         name: "FK_CustomerInvoiceDetailModel_CustomerInvoice_CustomerInvoiceM~",
                         column: x => x.CustomerInvoiceModelId,
                         principalTable: "CustomerInvoice",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductMeasureModel",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    ProductId = table.Column<string>(type: "text", nullable: false),
+                    Quantity = table.Column<string>(type: "text", nullable: true),
+                    Measure = table.Column<string>(type: "text", nullable: false),
+                    QtyPerMeasure = table.Column<string>(type: "text", nullable: true),
+                    CostPrice = table.Column<float>(type: "real", nullable: false),
+                    UnitPrice = table.Column<float>(type: "real", nullable: false),
+                    ProductsModelId = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductMeasureModel", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductMeasureModel_Products_ProductsModelId",
+                        column: x => x.ProductsModelId,
+                        principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -352,6 +375,11 @@ namespace SalesRegister.Migrations
                 name: "IX_CustomerInvoiceDetailModel_CustomerInvoiceModelId",
                 table: "CustomerInvoiceDetailModel",
                 column: "CustomerInvoiceModelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductMeasureModel_ProductsModelId",
+                table: "ProductMeasureModel",
+                column: "ProductsModelId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -384,13 +412,13 @@ namespace SalesRegister.Migrations
                 name: "Department");
 
             migrationBuilder.DropTable(
-                name: "ProductBalances");
+                name: "ProductMeasureModel");
 
             migrationBuilder.DropTable(
-                name: "ProductBalanceUpdates");
+                name: "StockBalances");
 
             migrationBuilder.DropTable(
-                name: "Products");
+                name: "StockBalanceUpdates");
 
             migrationBuilder.DropTable(
                 name: "Totals");
@@ -403,6 +431,9 @@ namespace SalesRegister.Migrations
 
             migrationBuilder.DropTable(
                 name: "CustomerInvoice");
+
+            migrationBuilder.DropTable(
+                name: "Products");
         }
     }
 }

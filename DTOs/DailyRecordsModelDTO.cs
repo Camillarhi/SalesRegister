@@ -13,18 +13,12 @@ namespace SalesRegister.DTOs
         [Required]
         public int Quantity { get; set; }
 
-      
         [Required]
-        [ForeignKey(nameof(ProductsModel.Product))]
         public string Product { get; set; }
-
         [Required]
-        [ForeignKey(nameof(ProductsModel.Product))]
         public string Measure { get; set; }
 
-
         [Required]
-        [ForeignKey(nameof(ProductsModel.UnitPrice))]
         public float UnitPrice { get; set; }
 
         public float Amount { get; set; }

@@ -9,18 +9,10 @@ namespace SalesRegister.DTOs
 {
     public class ProductsModelDTO
     {
-        [Required]
         public string ProductCode { get; set; }
 
-        [Required]
-        public string Product { get; set; }
+        public string ProductName { get; set; }
         //public IFormFile BarcodeImage { get; set; }
-        [Required]
-        public string Measure { get; set; }
-
-
-        [Required]
-        public float UnitPrice { get; set; }
 
     }
 }

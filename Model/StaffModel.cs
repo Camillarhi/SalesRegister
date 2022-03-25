@@ -29,5 +29,8 @@ namespace SalesRegister.Model
 
         public string StaffId { get; set; }
 
+        public string CreatedById { get; set; }
+
+
     }
 }

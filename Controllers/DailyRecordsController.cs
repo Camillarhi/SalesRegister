@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SalesRegister.ApplicationDbContex;
 using SalesRegister.DTOs;
+using SalesRegister.HelperClass;
 using SalesRegister.Model;
 using System;
 using System.Collections.Generic;
@@ -76,17 +77,18 @@ namespace SalesRegister.Controllers
                 {
                     recordDetail.Quantity = item.Quantity;
                     recordDetail.Product = item.Product;
-                    recordDetail.Measure = item.Measure;
                     recordDetail.Date = record.Date;
                     recordDetail.InvoiceId = record.InvoiceId;
-                    var unitPrice = _db.Products.Where(u => u.Measure == recordDetail.Measure && u.Product == recordDetail.Product).FirstOrDefault().UnitPrice;
+                    var product = _db.Products.Find(item.ProductId);
+                    var unitPrice = product.ProductMeasures.Find(x => x.Id == item.MeasureId && x.ProductId == item.ProductId).UnitPrice;
+                    //var unitPrice = _db.Products.Where(u => u.Measure == recordDetail.Measure && u.Product == recordDetail.Product).FirstOrDefault().UnitPrice;
                     recordDetail.UnitPrice = unitPrice;
                     recordDetail.Amount = unitPrice * recordDetail.Quantity;
-                    var productsQty = _db.ProductBalances.Where(u => u.Measure == recordDetail.Measure && u.Product == recordDetail.Product).Select(u => u.Id).FirstOrDefault();
-                    var update = _db.ProductBalances.Find(productsQty);
+                    var productsQty = _db.StockBalances.Where(u => u.Measure == recordDetail.Measure && u.Product == recordDetail.Product).Select(u => u.Id).FirstOrDefault();
+                    var update = _db.StockBalances.Find(productsQty);
                     update.Quantity -= recordDetail.Quantity;
 
-                    _db.ProductBalances.Update(update);
+                    _db.StockBalances.Update(update);
                     record.InvoiceDetail.Add(recordDetail);
                 }
                 for (var i = 0; i < record.InvoiceDetail.Count; i++)
@@ -100,9 +102,10 @@ namespace SalesRegister.Controllers
                     dailySales.Product = item.Product;
                     dailySales.Measure = item.Measure;
                     dailySales.Date = DateTime.Now;
-                    var product = _db.Products.Where(u => u.Measure == dailySales.Measure && u.Product == dailySales.Product).FirstOrDefault().UnitPrice;
-                    dailySales.UnitPrice = product;
-                    dailySales.Amount = product * dailySales.Quantity;
+                    var product = _db.Products.Find(item.ProductId);
+                    var unitPrice = product.ProductMeasures.Find(x => x.Id == item.MeasureId && x.ProductId == item.ProductId).UnitPrice;
+                    dailySales.UnitPrice = unitPrice;
+                    dailySales.Amount = unitPrice * dailySales.Quantity;
                     records.Add(dailySales);
 
                 }

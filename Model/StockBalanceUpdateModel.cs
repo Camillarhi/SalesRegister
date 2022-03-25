@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SalesRegister.Model
 {
-    public class ProductBalanceUpdateModel
+    public class StockBalanceUpdateModel
     {
         [Key]
         public int Id { get; set; }
@@ -21,6 +21,6 @@ namespace SalesRegister.Model
         [Required]
         public int Quantity { get; set; }
         [Required]
-        public DateTime Date { get; set; }
+        public string AdminId { get; set; }
     }
 }

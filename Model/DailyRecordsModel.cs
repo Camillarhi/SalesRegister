@@ -18,15 +18,12 @@ namespace SalesRegister.Model
 
         
         [Required]
-        [ForeignKey(nameof(ProductsModel.Product))]
         public string Product { get; set; }
 
         [Required]
-        [ForeignKey(nameof(ProductsModel.Measure))]
         public string Measure { get; set; }
 
         [Required]
-        [ForeignKey(nameof(ProductsModel.UnitPrice))]
         public float UnitPrice { get; set; }
 
         [Required]

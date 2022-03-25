@@ -19,10 +19,9 @@ namespace SalesRegister.ApplicationDbContex
         public DbSet<TotalModel> Totals { get; set; }
         public DbSet<CompanyModel> CompanyName { get; set; }
         public DbSet<RolesModel> Department { get; set; }
-        public DbSet<ProductBalanceModel> ProductBalances { get; set; }
-        public DbSet<ProductBalanceUpdateModel> ProductBalanceUpdates { get; set; }
+        public DbSet<StockBalanceModel> StockBalances { get; set; }
+        public DbSet<StockBalanceUpdateModel> StockBalanceUpdates { get; set; }
         public DbSet<CustomerInvoiceModel> CustomerInvoice { get; set; }
-        // public DbSet<CustomerInvoiceDetailModel> CustomerInvoiceDetails { get; set; }
 
     }
 }

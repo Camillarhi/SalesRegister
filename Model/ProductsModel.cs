@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,23 +10,20 @@ namespace SalesRegister.Model
 {
     public class ProductsModel
     {
-        [Key]
-        public int Id { get; set; }
+        [Required]
+        public string Id { get; set; }
 
         [Required]
         public string ProductCode { get; set; }
         [Required]
 
-        public string Product { get; set; }
+        public string ProductName { get; set; }
 
         [Required]
-        public string Measure { get; set; }
+        [ForeignKey(nameof(IdentityUser.Id))]
+        public string AdminId { get; set; }
 
-        //public string BarcodeImage { get; set; }
-        [Required]
+        public List<ProductMeasureModel> ProductMeasures { get; set; }
 
-        public float UnitPrice { get; set; }
-
-       
     }
 }

@@ -3,6 +3,7 @@ using IronBarCode;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SalesRegister.ApplicationDbContex;
 using SalesRegister.DTOs;
@@ -18,46 +19,50 @@ namespace SalesRegister.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-  //  [Authorize(Roles = "Admin")]
+    //  [Authorize(Roles = "Admin")]
     public class ProductsController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
-
-        public ProductsController(ApplicationDbContext db
+        UserManager<StaffModel> _userManager;
+        public ProductsController(ApplicationDbContext db, UserManager<StaffModel> userManager
             )
         {
             _db = db;
+            _userManager = userManager;
         }
 
 
         [HttpGet]
-     //   [AllowAnonymous]
-        public ActionResult<ProductsModel> GetAll()
+        //   [AllowAnonymous]
+        public async Task<ActionResult<ProductsModel>> GetAll()
         {
-            IEnumerable<ProductsModel> objList = _db.Products;
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            IEnumerable<ProductsModel> objList = _db.Products.Where(x => x.AdminId == currentUser.Id);
             return Ok(objList);
         }
 
         [HttpGet("getProduct")]
         //   [AllowAnonymous]
-        public ActionResult<ProductsModel> GetProduct()
+        public async Task<ActionResult<ProductsModel>> GetProduct()
         {
-            var objList = _db.Products.Select(x => x.Product).Distinct().ToList();
+            var currentUser = await _userManager.GetUserAsync(User);
+            //var objList = _db.Products.Select(x => x.ProductName).Distinct().ToList();
+            var objList = _db.Products.Where(x => x.AdminId == currentUser.Id).Select(x => x.ProductName).ToList();
             return Ok(objList);
         }
 
 
         [HttpGet("{Id}")]
 
-        public ActionResult Get(int? Id)
+        public async Task<ActionResult> Get(string Id)
         {
-            if (Id == 0||Id==null)
+            if ( Id == null)
             {
                 return NotFound();
             }
-            var obj = _db.Products.Find(Id);
-
-
+            var currentUser = await _userManager.GetUserAsync(User);
+            var obj = _db.Products.Where(x => x.AdminId == currentUser.Id && x.Id == Id).FirstOrDefault();
             if (obj == null)
             {
                 return NotFound();
@@ -67,25 +72,25 @@ namespace SalesRegister.Controllers
 
 
         [HttpGet("productname")]
-    //    [AllowAnonymous]
-
-        public ActionResult GetMeasure(string Name)
-         {
-            if (Name == null)
+        //    [AllowAnonymous]
+        public async Task<ActionResult> GetMeasure(string Id)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (Id == null)
             {
                 return NotFound();
             }
-            var obj = _db.Products.Where(x => x.Product == Name).Select(x => new { x.Measure, x.UnitPrice }).ToList();
+            var obj = _db.Products.Where(x => x.Id == Id && x.AdminId == currentUser.Id).FirstOrDefault();
+            var objMeasures = obj.ProductMeasures.Select(x => new { x.Measure, x.UnitPrice }).ToList();
 
-
-            if (obj == null)
+            if (objMeasures == null)
             {
                 return NotFound();
             }
-            return Ok(obj);
+            return Ok(objMeasures);
         }
 
-       
+
         //[HttpGet("filter")]
         //public async Task<ActionResult<List<ProductsModelDTO>>> Filter([FromQuery] FilterProducts filterProducts)
         //{
@@ -104,21 +109,19 @@ namespace SalesRegister.Controllers
 
         [HttpPost]
 
-        public ActionResult Post([FromBody] ProductsModelDTO productsModel)
+        public async Task<ActionResult> Post([FromBody] ProductsModelDTO productsModel)
         {
             if (ModelState.IsValid)
             {
+                string uniqueId = System.Guid.NewGuid().ToString();
+                var currentUser = await _userManager.GetUserAsync(User);
                 var product = new ProductsModel
                 {
+                    Id= uniqueId,
                     ProductCode = productsModel.ProductCode,
-                    Product = (productsModel.Product).ToUpper(),
-                    UnitPrice = productsModel.UnitPrice,
-                    Measure = productsModel.Measure
+                    ProductName = (productsModel.ProductName).ToUpper(),
+                    AdminId = currentUser.Id
                 };
-
-
-
-
 
                 // product.BarcodeImage = await _fileStorageService.SaveFile(containerName, productsModel.BarcodeImage);
                 //BarcodeResult[] Results = BarcodeReader.QuicklyReadAllBarcodes("MultipleBarcodes.png");
@@ -147,26 +150,21 @@ namespace SalesRegister.Controllers
                 {
                     return BadRequest();
                 }
-                
-
-
-
                 _db.Products.Add(product);
                 _db.SaveChanges();
             }
             return Ok();
         }
 
-        [HttpPut("{id:int}")]
+        [HttpPut("{id}")]
 
-        public ActionResult Put(int Id, [FromBody] ProductsModel productsModel)
+        public async Task<ActionResult> Put(string Id, [FromBody] ProductsModel productsModel)
         {
             if (ModelState.IsValid)
             {
-                var product = _db.Products.Find(Id);
-                product.Product = (productsModel.Product).ToUpper();
-                product.UnitPrice = productsModel.UnitPrice;
-                product.Measure = productsModel.Measure;
+                var currentUser = await _userManager.GetUserAsync(User);
+                var product = _db.Products.Where(x => x.Id == Id && x.AdminId == currentUser.Id).FirstOrDefault();
+                product.ProductName = (productsModel.ProductName).ToUpper();
                 product.ProductCode = productsModel.ProductCode;
 
                 _db.Products.Update(product);
@@ -175,12 +173,54 @@ namespace SalesRegister.Controllers
             return Ok();
         }
 
-        
-        [HttpDelete("{id:int}")]
+        [HttpPut("productMeasure")]
 
-        public ActionResult Delete(int Id)
+        public async Task<ActionResult> PutMeasure(string Id, [FromBody] List<ProductMeasureDTO> productMeasure)
         {
-            var product = _db.Products.Find(Id);
+            if (ModelState.IsValid)
+            {
+                var currentUser = await _userManager.GetUserAsync(User);
+                string uniqueId = System.Guid.NewGuid().ToString();
+                var product = _db.Products.Where(x => x.Id == Id && x.AdminId == currentUser.Id).FirstOrDefault();
+                var prodMeasure = new ProductMeasureModel();
+                var productMeasures = new List<ProductMeasureModel>();
+                foreach(var item in productMeasure)
+                {
+                    prodMeasure.CostPrice = item.CostPrice;
+                    prodMeasure.Id = uniqueId;
+                    prodMeasure.Measure = item.Measure;
+                    prodMeasure.ProductId = product.Id;
+                    prodMeasure.QtyPerMeasure = item.QtyPerMeasure;
+                    prodMeasure.UnitPrice = item.UnitPrice;
+
+                    product.ProductMeasures.Add(prodMeasure);
+                }
+
+                _db.Products.UpdateRange(product);
+                _db.SaveChanges();
+            }
+            return Ok();
+        }
+
+        [HttpDelete("deletemeasure")]
+
+        public async Task<ActionResult> DeleteMeasure(string ProductId, string MeasureId)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var product = _db.Products.Where(x => x.Id == ProductId && x.AdminId == currentUser.Id).FirstOrDefault();
+            var productMeasure = product.ProductMeasures.Where(x => x.Id != MeasureId).ToList();
+            product.ProductMeasures = productMeasure;
+            _db.Products.UpdateRange(product);
+            _db.SaveChanges();
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+
+        public async Task<ActionResult> Delete(string Id)
+        {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var product = _db.Products.Where(x => x.Id == Id && x.AdminId == currentUser.Id).FirstOrDefault();
 
             _db.Products.Remove(product);
             _db.SaveChanges();

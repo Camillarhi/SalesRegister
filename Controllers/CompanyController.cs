@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SalesRegister.ApplicationDbContex;
 using SalesRegister.DTOs;
@@ -15,31 +16,33 @@ namespace SalesRegister.Controllers
     public class CompanyController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
-
-        public CompanyController(ApplicationDbContext db)
+        UserManager<StaffModel> _userManager;
+        public CompanyController(ApplicationDbContext db, UserManager<StaffModel> userManager
+            )
         {
             _db = db;
+            _userManager = userManager;
         }
 
         [HttpGet]
-        public ActionResult<CompanyModel> GetAll()
+        public async Task<ActionResult<CompanyModel>> GetAll()
         {
-            IEnumerable<CompanyModel> objList = _db.CompanyName;
+            var currentUser = await _userManager.GetUserAsync(User);
+            IEnumerable<CompanyModel> objList = _db.CompanyName.Where(x => x.AdminId == currentUser.Id);
             return Ok(objList);
         }
 
 
         [HttpGet("{Id}")]
 
-        public ActionResult Get(int Id)
+        public async Task<ActionResult> Get(string Id)
         {
-            if (Id == 0)
+            if (Id == null)
             {
                 return NotFound();
             }
-            var obj = _db.CompanyName.Find(Id);
-
-
+            var currentUser = await _userManager.GetUserAsync(User);
+            var obj = _db.CompanyName.Where(x => x.AdminId == currentUser.Id && x.Id == Id).FirstOrDefault();
             if (obj == null)
             {
                 return NotFound();
@@ -50,14 +53,22 @@ namespace SalesRegister.Controllers
 
         [HttpPost]
 
-        public ActionResult Post([FromBody] CompanyModelDTO companyModel)
+        public async Task<ActionResult> Post([FromBody] CompanyModelDTO companyModel)
         {
             if (ModelState.IsValid)
             {
+                string uniqueId = System.Guid.NewGuid().ToString();
+                var currentUser = await _userManager.GetUserAsync(User);
                 var companyName = new CompanyModel()
                 {
+                    Id = uniqueId,
+                    AdminId = currentUser.Id,
                     CompanyName = companyModel.CompanyName
                 };
+                if (companyName == null)
+                {
+                    return BadRequest();
+                }
                 _db.CompanyName.Add(companyName);
                 _db.SaveChanges();
             }
@@ -65,16 +76,16 @@ namespace SalesRegister.Controllers
         }
 
 
-        [HttpPut("{id:int}")]
+        [HttpPut("{id}")]
 
 
-        public ActionResult Put(int Id, [FromBody] CompanyModel companyModel)
+        public async Task<ActionResult> Put(string Id, [FromBody] CompanyModel companyModel)
         {
             if (ModelState.IsValid)
             {
-                var companyName = _db.CompanyName.Find(Id);
+                var currentUser = await _userManager.GetUserAsync(User);
+                var companyName = _db.CompanyName.Where(x => x.AdminId == currentUser.Id && x.Id == Id).FirstOrDefault();
                 companyName.CompanyName = companyModel.CompanyName;
-
                 _db.CompanyName.Update(companyName);
                 _db.SaveChanges();
 
@@ -82,11 +93,11 @@ namespace SalesRegister.Controllers
             return Ok();
         }
 
-        [HttpDelete("{id:int}")]
-        public ActionResult Delete(int Id)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(string Id)
         {
-            var companyName = _db.CompanyName.Find(Id);
-
+            var currentUser = await _userManager.GetUserAsync(User);
+            var companyName = _db.CompanyName.Where(x => x.AdminId == currentUser.Id && x.Id == Id).FirstOrDefault();
             _db.CompanyName.Remove(companyName);
             _db.SaveChanges();
             return Ok();
