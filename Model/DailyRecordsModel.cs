@@ -30,7 +30,9 @@ namespace SalesRegister.Model
         public float Amount { get; set; }
 
         public DateTime Date { get; set; }
-
+        [Required]
         public string CustomerName { get; set; }
+        [Required]
+        public string AdminId { get; set; }
     }
 }

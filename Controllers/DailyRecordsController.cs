@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SalesRegister.ApplicationDbContex;
 using SalesRegister.DTOs;
@@ -16,33 +17,33 @@ namespace SalesRegister.Controllers
     public class DailyRecordsController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
-
-        public DailyRecordsController(ApplicationDbContext db)
+        UserManager<StaffModel> _userManager;
+        public DailyRecordsController(ApplicationDbContext db, UserManager<StaffModel> userManager
+            )
         {
             _db = db;
+            _userManager = userManager;
         }
 
-        [HttpGet]
 
-        public ActionResult<DailyRecordsModel> GetAll()
+        [HttpGet]
+        public async Task<ActionResult<DailyRecordsModel>> GetAll()
         {
-            IEnumerable<DailyRecordsModel> objList = _db.DailyRecords;
-            
-            
+            var currentUser = await _userManager.GetUserAsync(User);
+            IEnumerable<DailyRecordsModel> objList = _db.DailyRecords.Where(x => x.AdminId == currentUser.Id);
             return Ok(objList);
         }
 
         [HttpGet("{Id}")]
 
-        public ActionResult Get(int? Id)
+        public async Task<ActionResult> Get(int? Id)
         {
+            var currentUser = await _userManager.GetUserAsync(User);
             if (Id == 0 || Id == null)
             {
                 return NotFound();
             }
-            var obj = _db.DailyRecords.Find(Id);
-
-
+            var obj = _db.DailyRecords.Where(x => x.AdminId == currentUser.Id && x.Id == Id).FirstOrDefault();
             if (obj == null)
             {
                 return NotFound();
@@ -53,17 +54,17 @@ namespace SalesRegister.Controllers
 
         [HttpPost("sales")]
 
-        public ActionResult PostInvoice([FromBody] CustomerInvoiceModelDTO customerInvoiceModel)
+        public async Task<ActionResult> PostInvoice([FromBody] CustomerInvoiceModelDTO customerInvoiceModel)
         {
             if (ModelState.IsValid)
             {
-
+                var currentUser = await _userManager.GetUserAsync(User);
                 var record = new CustomerInvoiceModel();
                 var recordDetail = new CustomerInvoiceDetailModel();
                 var records = new List<DailyRecordsModel>();
                 var dailySales = new DailyRecordsModel();
                 var totAmt = new List<float>();
-
+                record.AdminId = currentUser.Id;
                 record.CustomerName = customerInvoiceModel.CustomerName;
                 record.Date = DateTime.Now;
                 var custName =customerInvoiceModel.CustomerName.Substring(0, 3);
@@ -75,6 +76,7 @@ namespace SalesRegister.Controllers
 
                 foreach (var item in customerInvoiceModel.InvoiceDetail)
                 {
+                    recordDetail.AdminId = record.AdminId;
                     recordDetail.Quantity = item.Quantity;
                     recordDetail.Product = item.Product;
                     recordDetail.Date = record.Date;
@@ -98,6 +100,7 @@ namespace SalesRegister.Controllers
                 record.Total = totAmt.Sum();
                 foreach (var item in customerInvoiceModel.InvoiceDetail)
                 {
+                    dailySales.AdminId = record.AdminId;
                     dailySales.Quantity = item.Quantity;
                     dailySales.Product = item.Product;
                     dailySales.Measure = item.Measure;
@@ -177,29 +180,12 @@ namespace SalesRegister.Controllers
         //    return Ok();
         //}
 
-        //[HttpPut]
-
-        //public ActionResult Put(int Id, [FromBody] DailyRecordsModel dailyRecordsModel)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        var records = _db.DailyRecords.Find(Id);
-        //        records.Measure = dailyRecordsModel.Measure;
-        //        records.Quantity = dailyRecordsModel.Quantity;
-        //        records.Amount = records.Quantity * records.UnitPrice;
-
-        //        _db.DailyRecords.Update(records);
-        //        _db.SaveChanges();
-        //    }
-        //    return Ok();
-        //}
-
         [HttpDelete]
 
-        public ActionResult Delete(int Id)
+        public async Task<ActionResult> Delete(int Id)
         {
-            var records = _db.DailyRecords.Find(Id);
-
+            var currentUser = await _userManager.GetUserAsync(User);
+            var records = _db.DailyRecords.Where(x => x.AdminId == currentUser.Id && x.Id == Id).FirstOrDefault();
             _db.DailyRecords.Remove(records);
             _db.SaveChanges();
             return Ok();
