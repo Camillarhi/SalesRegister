@@ -52,7 +52,7 @@ namespace SalesRegister.Controllers
         }
 
 
-        [HttpPost("sales")]
+        [HttpPost]
 
         public async Task<ActionResult> PostInvoice([FromBody] CustomerInvoiceModelDTO customerInvoiceModel)
         {
@@ -60,9 +60,7 @@ namespace SalesRegister.Controllers
             {
                 var currentUser = await _userManager.GetUserAsync(User);
                 var record = new CustomerInvoiceModel();
-                var recordDetail = new CustomerInvoiceDetailModel();
                 var records = new List<DailyRecordsModel>();
-                var dailySales = new DailyRecordsModel();
                 var totAmt = new List<float>();
                 record.AdminId = currentUser.Id;
                 record.CustomerName = customerInvoiceModel.CustomerName;
@@ -76,6 +74,7 @@ namespace SalesRegister.Controllers
 
                 foreach (var item in customerInvoiceModel.InvoiceDetail)
                 {
+                    var recordDetail = new CustomerInvoiceDetailModel();
                     recordDetail.AdminId = record.AdminId;
                     recordDetail.Quantity = item.Quantity;
                     recordDetail.Product = item.Product;
@@ -100,6 +99,7 @@ namespace SalesRegister.Controllers
                 record.Total = totAmt.Sum();
                 foreach (var item in customerInvoiceModel.InvoiceDetail)
                 {
+                    var dailySales = new DailyRecordsModel();
                     dailySales.AdminId = record.AdminId;
                     dailySales.Quantity = item.Quantity;
                     dailySales.Product = item.Product;

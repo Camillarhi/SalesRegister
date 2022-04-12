@@ -7,7 +7,6 @@ namespace SalesRegister.DTOs
 {
     public class ProductDetailsDTO
     {
-        public string ProductCode { get; set; }
 
         public string Product { get; set; }
 

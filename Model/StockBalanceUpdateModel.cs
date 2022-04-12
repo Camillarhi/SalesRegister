@@ -22,5 +22,8 @@ namespace SalesRegister.Model
         public int Quantity { get; set; }
         [Required]
         public string AdminId { get; set; }
+
+        [Required]
+        public DateTime Date { get; set; }
     }
 }

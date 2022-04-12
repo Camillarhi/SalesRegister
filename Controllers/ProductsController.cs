@@ -42,15 +42,15 @@ namespace SalesRegister.Controllers
             return Ok(objList);
         }
 
-        [HttpGet("getProduct")]
-        //   [AllowAnonymous]
-        public async Task<ActionResult<ProductsModel>> GetProduct()
-        {
-            var currentUser = await _userManager.GetUserAsync(User);
-            //var objList = _db.Products.Select(x => x.ProductName).Distinct().ToList();
-            var objList = _db.Products.Where(x => x.AdminId == currentUser.Id).Select(x => x.ProductName).ToList();
-            return Ok(objList);
-        }
+        //[HttpGet("getProduct")]
+        ////   [AllowAnonymous]
+        //public async Task<ActionResult<ProductsModel>> GetProduct()
+        //{
+        //    var currentUser = await _userManager.GetUserAsync(User);
+        //    //var objList = _db.Products.Select(x => x.ProductName).Distinct().ToList();
+        //    var objList = _db.Products.Where(x => x.AdminId == currentUser.Id).Select(x => x.ProductName).ToList();
+        //    return Ok(objList);
+        //}
 
 
         [HttpGet("{Id}")]
@@ -71,41 +71,26 @@ namespace SalesRegister.Controllers
         }
 
 
-        [HttpGet("productname")]
-        //    [AllowAnonymous]
-        public async Task<ActionResult> GetMeasure(string Id)
-        {
-            var currentUser = await _userManager.GetUserAsync(User);
-            if (Id == null)
-            {
-                return NotFound();
-            }
-            var obj = _db.Products.Where(x => x.Id == Id && x.AdminId == currentUser.Id).FirstOrDefault();
-            var objMeasures = obj.ProductMeasures.Select(x => new { x.Measure, x.UnitPrice }).ToList();
-
-            if (objMeasures == null)
-            {
-                return NotFound();
-            }
-            return Ok(objMeasures);
-        }
-
-
-        //[HttpGet("filter")]
-        //public async Task<ActionResult<List<ProductsModelDTO>>> Filter([FromQuery] FilterProducts filterProducts)
+        //[HttpGet("productname")]
+        ////    [AllowAnonymous]
+        //public async Task<ActionResult> GetMeasure(string Id)
         //{
-        //    var productQuerable = _db.Products.AsQueryable();
-
-        //    if (!string.IsNullOrEmpty(filterProducts.Product))
+        //    var currentUser = await _userManager.GetUserAsync(User);
+        //    if (Id == null)
         //    {
-        //        productQuerable = productQuerable.Where(x => x.Product.Contains(filterProducts.Product));
-
+        //        return NotFound();
         //    }
-        //   // await HttpContext.InsertParameterPaginationInHeader(productQuerable);
-        //    var products =  productQuerable.OrderBy(x => x.Product).ToList();
-        //    return Ok(products);
-        //  //  return Mapper.Map<List<ProductsModelDTO>>(products);
+        //    var obj = _db.Products.Where(x => x.Id == Id && x.AdminId == currentUser.Id).FirstOrDefault();
+        //    var objMeasures = obj.ProductMeasures.Select(x => new { x.Measure, x.UnitPrice }).ToList();
+
+        //    if (objMeasures == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return Ok(objMeasures);
         //}
+
+
 
         [HttpPost]
 
@@ -115,37 +100,31 @@ namespace SalesRegister.Controllers
             {
                 string uniqueId = System.Guid.NewGuid().ToString();
                 var currentUser = await _userManager.GetUserAsync(User);
+                var produtName = (productsModel.ProductName).ToUpper().Substring(0, 3);
+                var rnd = new Random();
+                int num = rnd.Next(50);
                 var product = new ProductsModel
                 {
-                    Id= uniqueId,
-                    ProductCode = productsModel.ProductCode,
+                    Id = uniqueId,
+                    ProductCode = produtName + num,
                     ProductName = (productsModel.ProductName).ToUpper(),
                     AdminId = currentUser.Id
                 };
+                foreach (var item in productsModel.ProductMeasures)
+                {
+                    string measureUniqueId = System.Guid.NewGuid().ToString();
+                    var prodMeasure = new ProductMeasureModel
+                    {
+                        Id = measureUniqueId,
+                        CostPrice = item.CostPrice,
+                        Measure = item.Measure,
+                        ProductId = product.Id,
+                        QtyPerMeasure = item.QtyPerMeasure,
+                        UnitPrice = item.UnitPrice
+                    };
 
-                // product.BarcodeImage = await _fileStorageService.SaveFile(containerName, productsModel.BarcodeImage);
-                //BarcodeResult[] Results = BarcodeReader.QuicklyReadAllBarcodes("MultipleBarcodes.png");
-                //// Work with the results
-                //foreach (BarcodeResult Result in Results)
-                //{
-                //    string Value = Result.Value;
-                //    Bitmap Img = Result.BarcodeImage;
-                //    BarcodeEncoding BarcodeType = Result.BarcodeType;
-                //    byte[] Binary = Result.BinaryValue;
-                //    Console.WriteLine(Result.Value);
-                //    return Ok(Value);
-
-
-                //};
-
-
-                //  BarcodeResult Result = BarcodeReader.QuicklyReadOneBarcode("GetStarted.png");
-                //BarcodeResult Result = BarcodeReader.QuicklyReadOneBarcode("barcode.jpg");
-                //if (Result != null)
-                //{
-                //    productsModel.BarcodeImage= Result.BinaryValue;
-                //}
-
+                    product.ProductMeasures.Add(prodMeasure);
+                }
                 if (product == null)
                 {
                     return BadRequest();
@@ -163,38 +142,41 @@ namespace SalesRegister.Controllers
             if (ModelState.IsValid)
             {
                 var currentUser = await _userManager.GetUserAsync(User);
+                var productName = (productsModel.ProductName).ToUpper().Substring(0, 3);
+                var rnd = new Random();
+                int num = rnd.Next(50);
                 var product = _db.Products.Where(x => x.Id == Id && x.AdminId == currentUser.Id).FirstOrDefault();
                 product.ProductName = (productsModel.ProductName).ToUpper();
-                product.ProductCode = productsModel.ProductCode;
+                product.ProductCode = productName + num;
+                product.ProductMeasures = productsModel.ProductMeasures;
+                //foreach (var item in productsModel.ProductMeasures)
+                //{
+                //    var productMeasure = product.ProductMeasures.Where(x => x.Id == item.Id).FirstOrDefault();
+                //    if (productMeasure != null)
+                //    {
+                //        productMeasure.CostPrice = item.CostPrice;
+                //        productMeasure.Measure = item.Measure;
+                //        productMeasure.QtyPerMeasure = item.QtyPerMeasure;
+                //        productMeasure.UnitPrice = item.UnitPrice;
 
-                _db.Products.Update(product);
-                _db.SaveChanges();
-            }
-            return Ok();
-        }
+                //        product.ProductMeasures.Add(productMeasure);
+                //    }
+                //    else
+                //    {
+                //        string measureUniqueId = System.Guid.NewGuid().ToString();
+                //        var prodMeasure = new ProductMeasureModel
+                //        {
+                //            Id = measureUniqueId,
+                //            CostPrice = item.CostPrice,
+                //            Measure = item.Measure,
+                //            ProductId = product.Id,
+                //            QtyPerMeasure = item.QtyPerMeasure,
+                //            UnitPrice = item.UnitPrice
+                //        };
 
-        [HttpPut("productMeasure")]
-
-        public async Task<ActionResult> PutMeasure(string Id, [FromBody] List<ProductMeasureDTO> productMeasure)
-        {
-            if (ModelState.IsValid)
-            {
-                var currentUser = await _userManager.GetUserAsync(User);
-                string uniqueId = System.Guid.NewGuid().ToString();
-                var product = _db.Products.Where(x => x.Id == Id && x.AdminId == currentUser.Id).FirstOrDefault();
-                var prodMeasure = new ProductMeasureModel();
-                var productMeasures = new List<ProductMeasureModel>();
-                foreach(var item in productMeasure)
-                {
-                    prodMeasure.CostPrice = item.CostPrice;
-                    prodMeasure.Id = uniqueId;
-                    prodMeasure.Measure = item.Measure;
-                    prodMeasure.ProductId = product.Id;
-                    prodMeasure.QtyPerMeasure = item.QtyPerMeasure;
-                    prodMeasure.UnitPrice = item.UnitPrice;
-
-                    product.ProductMeasures.Add(prodMeasure);
-                }
+                //        product.ProductMeasures.Add(prodMeasure);
+                //    }
+                //}
 
                 _db.Products.UpdateRange(product);
                 _db.SaveChanges();
@@ -202,7 +184,38 @@ namespace SalesRegister.Controllers
             return Ok();
         }
 
-        [HttpDelete("deletemeasure")]
+        //[HttpPut("productMeasure")]
+
+        //public async Task<ActionResult> PutMeasure(string Id, [FromBody] List<ProductMeasureDTO> productMeasure)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var currentUser = await _userManager.GetUserAsync(User);
+        //        string uniqueId = System.Guid.NewGuid().ToString();
+        //        var product = _db.Products.Where(x => x.Id == Id && x.AdminId == currentUser.Id).FirstOrDefault();
+        //        var productMeasures = new List<ProductMeasureModel>();
+        //        foreach(var item in productMeasure)
+        //        {
+        //            var prodMeasure = new ProductMeasureModel
+        //            {
+        //                CostPrice = item.CostPrice,
+        //                Id = uniqueId,
+        //                Measure = item.Measure,
+        //                ProductId = product.Id,
+        //                QtyPerMeasure = item.QtyPerMeasure,
+        //                UnitPrice = item.UnitPrice
+        //            };
+
+        //            product.ProductMeasures.Add(prodMeasure);
+        //        }
+
+        //        _db.Products.UpdateRange(product);
+        //        _db.SaveChanges();
+        //    }
+        //    return Ok();
+        //}
+
+        [HttpDelete("deletemeasure/{id}")]
 
         public async Task<ActionResult> DeleteMeasure(string ProductId, string MeasureId)
         {

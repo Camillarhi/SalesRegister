@@ -47,7 +47,7 @@ namespace SalesRegister.Controllers
         }
 
 
-
+        //Get all staffs
         [HttpGet("staff")]
         public async Task<ActionResult<StaffModelDTO>> GetAll()
         {
@@ -82,6 +82,7 @@ namespace SalesRegister.Controllers
             }
         }
 
+        //Get single staff
         [HttpGet("staff/{Id}")]
         public async Task<IActionResult> Get(string Id)
         {
@@ -106,6 +107,7 @@ namespace SalesRegister.Controllers
 
         }
 
+        //Get admin Profile
         [HttpGet("admin/{Id}")]
         public async Task<IActionResult> GetAdmin(string Id)
         {
@@ -113,13 +115,15 @@ namespace SalesRegister.Controllers
             {
                 var currentUser = await _userManager.GetUserAsync(User);
                 var staff = _db.Users.Where(u => u.Id == currentUser.Id && u.Id == Id).Select(u => u.Id).FirstOrDefault();
+                 var company = _db.CompanyName.Where(x => x.AdminId == currentUser.Id && x.Id == Id).FirstOrDefault();
                 var users = await _userManager.FindByIdAsync(staff);
                 if (staff == null)
                 {
                     return NotFound();
                 }
+                var profile = new {staff, company };
                 //return _mapper.Map<StaffModelDTO>(users);
-                return Ok(users);
+                return Ok(profile);
             }
 
             catch (Exception ex)
@@ -130,7 +134,7 @@ namespace SalesRegister.Controllers
 
         }
 
-
+        //admin login
         [HttpPost("createadmin")]
         public async Task<ActionResult<AuthenticationResponse>> CreateUser([FromBody] RegisterModelDTO register)
         {
@@ -178,7 +182,7 @@ namespace SalesRegister.Controllers
 
         }
 
-
+        // setup admin
         [HttpPost("setupadmin")]
 
         public async Task<IActionResult> Register([FromForm] AdminFormDTO model)
@@ -187,7 +191,8 @@ namespace SalesRegister.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var staff = _mapper.Map<StaffModel>(model);
+                    //var staff = _mapper.Map<StaffModel>(model);
+                    var staff = new StaffModel();
                     var currentUser = await _userManager.GetUserAsync(User);
                     var newStaff = _db.Users.Where(u => u.UserName == model.UserName).Select(u => u.Id).FirstOrDefault();
                     var newStaff2 = await _userManager.FindByIdAsync(newStaff);
@@ -197,8 +202,9 @@ namespace SalesRegister.Controllers
                     newStaff2.LastName = model.LastName;
                     newStaff2.PhoneNumber = model.PhoneNumber;
                     newStaff2.Address = model.Address;
+                    newStaff2.CreatedById = newStaff2.Id;
                     var user = new StaffModel();
-                    var departmentName = model.Department.Substring(0, 3);
+                    var departmentName ="Admin".Substring(0, 3);
                     var rnd = new Random();
                     int num = rnd.Next(50);
                     newStaff2.StaffId = departmentName + num;
@@ -208,11 +214,19 @@ namespace SalesRegister.Controllers
                     {
                         newStaff2.ProfilePicture = await _fileStorageService.SaveFile(containerName, model.ProfilePicture);
                     }
+                    string uniqueId = System.Guid.NewGuid().ToString();
+                    var companyName = new CompanyModel()
+                    {
+                        Id = uniqueId,
+                        AdminId = newStaff,
+                        CompanyName = model.CompanyName
+                    };
                     var result = await _userManager.UpdateAsync(newStaff2);
                     if (result.Succeeded)
                     {
 
                         await _userManager.AddToRoleAsync(newStaff2, model.Department);
+                        _db.CompanyName.Add(companyName);
                         await _db.SaveChangesAsync();
 
                     }
@@ -225,7 +239,7 @@ namespace SalesRegister.Controllers
                 return BadRequest(ex);
             }
         }
-
+        //register staff
         [HttpPost("registerstaff")]
 
         public async Task<IActionResult> RegisterStaff([FromForm] StaffModelDTO model)
@@ -279,9 +293,59 @@ namespace SalesRegister.Controllers
             }
         }
 
+        //edit Admin information
+        [HttpPut("admin/{Id}")]
+        public async Task<IActionResult> UpdateAdminProfile(string Id, [FromForm] AdminFormDTO model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var currentUser = await _userManager.GetUserAsync(User);
+                    //to get the Id of the staff from the database
+                    var del = _db.Users
+                           .Where(u => u.Id == Id)
+                           .Select(u => u.Id)
+                           .FirstOrDefault();
+                    var company = _db.CompanyName.Where(x => x.AdminId == currentUser.Id).FirstOrDefault();
+                    company.CompanyName = model.CompanyName;
+                    //get User Data from del (using the Id to get the column)
+                    var users = await _userManager.FindByIdAsync(del);
+                    users.DateOfBirth = model.DateOfBirth;
+                    users.FirstName = model.FirstName;
+                    users.LastName = model.LastName;
+                    users.Gender = model.Gender;
+                    users.PhoneNumber = model.PhoneNumber;
+                    users.Address = model.Address;
 
+                    if (model.ProfilePicture != null)
+                    {
+                        users.ProfilePicture = await _fileStorageService.SaveFile(containerName, model.ProfilePicture);
+                    }
+                    //update the column with the new information
+                    var result = await _userManager.UpdateAsync(users);
+                    var role = await _userManager.GetRolesAsync(users);
+                    await _userManager.RemoveFromRolesAsync(users, role);
+                    if (result.Succeeded)
+                    {
+                        _db.CompanyName.Update(company);
+                        await _userManager.AddToRoleAsync(users, model.Department);
+                        await _db.SaveChangesAsync();
+                    }
 
-        [HttpPut("updateStaffInfo")]
+                }
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex);
+            }
+
+        }
+
+        //edit staff information
+        [HttpPut("staff/{Id}")]
         public async Task<IActionResult> Update(string Id, [FromForm] StaffModelDTO model)
         {
             try
@@ -289,14 +353,9 @@ namespace SalesRegister.Controllers
                 if (ModelState.IsValid)
                 {
                     var currentUser = await _userManager.GetUserAsync(User);
-                    var getCompanyName = _db.CompanyName.Where(x => x.AdminId == currentUser.Id).Select(x => x.CompanyName).FirstOrDefault();
-                    var companyName = getCompanyName.Substring(0, 3);
-                    var departmentName = model.Department.Substring(0, 3);
-                    var rnd = new Random();
-                    int num = rnd.Next(50);
                     //to get the Id of the staff from the database
                     var del = _db.Users
-                           .Where(u => u.StaffId == Id)
+                           .Where(u => u.Id == Id)
                            .Select(u => u.Id)
                            .FirstOrDefault();
                     //get User Data from del (using the Id to get the column)
@@ -333,6 +392,7 @@ namespace SalesRegister.Controllers
 
         }
 
+        //reset password
         [HttpPut("UpdateStaffLoginInfo")]
         public async Task<IActionResult> EditLoginInfo( [FromForm] RegisterModelDTO register)
         {
@@ -363,7 +423,7 @@ namespace SalesRegister.Controllers
 
         }
 
-
+        //login
         [HttpPost("login")]
         public async Task<ActionResult<AuthenticationResponse>> Login([FromBody] LoginModelDTO login)
         {

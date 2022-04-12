@@ -23,7 +23,6 @@ namespace SalesRegister.DTOs
 
         [Required]
         public string Gender { get; set; }
-        [Required]
         public string Department { get; set; }
 
         public DateTime DateOfBirth { get; set; }

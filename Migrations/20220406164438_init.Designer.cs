@@ -10,13 +10,15 @@ using SalesRegister.ApplicationDbContex;
 namespace SalesRegister.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220325120432_second")]
-    partial class second
+    [Migration("20220406164438_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasAnnotation("Npgsql:CollationDefinition:my_collation", "en-u-ks-primary,en-u-ks-primary,icu,False")
+                .HasAnnotation("Npgsql:DefaultColumnCollation", "my_collation")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.12")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
@@ -174,6 +176,9 @@ namespace SalesRegister.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
+                    b.Property<string>("AdminId")
+                        .HasColumnType("text");
+
                     b.Property<float>("Amount")
                         .HasColumnType("real");
 
@@ -221,6 +226,9 @@ namespace SalesRegister.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
+                    b.Property<string>("AdminId")
+                        .HasColumnType("text");
+
                     b.Property<string>("CustomerName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -247,10 +255,15 @@ namespace SalesRegister.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+                    b.Property<string>("AdminId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<float>("Amount")
                         .HasColumnType("real");
 
                     b.Property<string>("CustomerName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("Date")
@@ -477,6 +490,9 @@ namespace SalesRegister.Migrations
                     b.Property<string>("AdminId")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Measure")
                         .IsRequired()
