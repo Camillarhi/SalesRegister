@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SalesRegister.ApplicationDbContex;
 using SalesRegister.DTOs;
 using SalesRegister.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SalesRegister.Controllers
@@ -26,8 +28,9 @@ namespace SalesRegister.Controllers
         [HttpGet]
         public async Task<ActionResult<CustomerInvoiceModel>> GetAll()
         {
-            var currentUser = await _userManager.GetUserAsync(User);
-            IEnumerable<CustomerInvoiceModel> objList = _db.CustomerInvoice.Where(x => x.AdminId == currentUser.CreatedById);
+            var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+            var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.CreatedById).FirstOrDefault();
+            IEnumerable<CustomerInvoiceModel> objList = _db.CustomerInvoice.Where(x => x.AdminId == currentUser);
             return Ok(objList);
         }
 
@@ -36,12 +39,13 @@ namespace SalesRegister.Controllers
 
         public async Task<ActionResult> Get(string Id)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+            var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.CreatedById).FirstOrDefault();
             if (Id == null)
             {
                 return NotFound();
             }
-            var obj = _db.CustomerInvoice.Where(x => x.AdminId == currentUser.CreatedById && x.Id == Id).FirstOrDefault();
+            var obj = _db.CustomerInvoice.Where(x => x.AdminId == currentUser && x.Id == Id).Include(y => y.InvoiceDetail).FirstOrDefault();
 
             if (obj == null)
             {
@@ -56,7 +60,7 @@ namespace SalesRegister.Controllers
         public async Task<ActionResult> Delete(string Id)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            var customer = _db.CustomerInvoice.Where(x => x.AdminId == currentUser.CreatedById && x.Id == Id).FirstOrDefault();
+            var customer = _db.CustomerInvoice.Where(x => x.AdminId == currentUser.CreatedById && x.Id == Id).Include(y => y.InvoiceDetail).FirstOrDefault();
 
             _db.CustomerInvoice.Remove(customer);
             _db.SaveChanges();

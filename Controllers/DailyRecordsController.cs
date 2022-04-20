@@ -8,6 +8,7 @@ using SalesRegister.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SalesRegister.Controllers
@@ -29,8 +30,9 @@ namespace SalesRegister.Controllers
         [HttpGet]
         public async Task<ActionResult<DailyRecordsModel>> GetAll()
         {
-            var currentUser = await _userManager.GetUserAsync(User);
-            IEnumerable<DailyRecordsModel> objList = _db.DailyRecords.Where(x => x.AdminId == currentUser.Id);
+            var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+            var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.CreatedById).FirstOrDefault();
+            IEnumerable<DailyRecordsModel> objList = _db.DailyRecords.Where(x => x.AdminId == currentUser);
             return Ok(objList);
         }
 
@@ -38,12 +40,13 @@ namespace SalesRegister.Controllers
 
         public async Task<ActionResult> Get(int? Id)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+            var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.CreatedById).FirstOrDefault();
             if (Id == 0 || Id == null)
             {
                 return NotFound();
             }
-            var obj = _db.DailyRecords.Where(x => x.AdminId == currentUser.Id && x.Id == Id).FirstOrDefault();
+            var obj = _db.DailyRecords.Where(x => x.AdminId == currentUser && x.Id == Id).FirstOrDefault();
             if (obj == null)
             {
                 return NotFound();
@@ -58,11 +61,12 @@ namespace SalesRegister.Controllers
         {
             if (ModelState.IsValid)
             {
-                var currentUser = await _userManager.GetUserAsync(User);
+                var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+                var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.CreatedById).FirstOrDefault();
                 var record = new CustomerInvoiceModel();
                 var records = new List<DailyRecordsModel>();
                 var totAmt = new List<float>();
-                record.AdminId = currentUser.Id;
+                record.AdminId = currentUser;
                 record.CustomerName = customerInvoiceModel.CustomerName;
                 record.Date = DateTime.Now;
                 var custName =customerInvoiceModel.CustomerName.Substring(0, 3);
@@ -71,6 +75,7 @@ namespace SalesRegister.Controllers
                 var getCompanyName = _db.CompanyName.FirstOrDefault();
                 var companyName = getCompanyName.CompanyName.Substring(0, 3);
                 record.InvoiceId = companyName + custName + num;
+                record.InvoiceDetail = new List<CustomerInvoiceDetailModel>();
 
                 foreach (var item in customerInvoiceModel.InvoiceDetail)
                 {
@@ -184,8 +189,9 @@ namespace SalesRegister.Controllers
 
         public async Task<ActionResult> Delete(int Id)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
-            var records = _db.DailyRecords.Where(x => x.AdminId == currentUser.Id && x.Id == Id).FirstOrDefault();
+            var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+            var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.CreatedById).FirstOrDefault();
+            var records = _db.DailyRecords.Where(x => x.AdminId == currentUser && x.Id == Id).FirstOrDefault();
             _db.DailyRecords.Remove(records);
             _db.SaveChanges();
             return Ok();

@@ -7,6 +7,7 @@ using SalesRegister.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SalesRegister.Controllers
@@ -27,8 +28,9 @@ namespace SalesRegister.Controllers
         [HttpGet]
         public async Task<ActionResult<CompanyModel>> GetAll()
         {
-            var currentUser = await _userManager.GetUserAsync(User);
-            IEnumerable<CompanyModel> objList = _db.CompanyName.Where(x => x.AdminId == currentUser.Id);
+            var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+            var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
+            IEnumerable<CompanyModel> objList = _db.CompanyName.Where(x => x.AdminId == currentUser);
             return Ok(objList);
         }
 
@@ -41,8 +43,9 @@ namespace SalesRegister.Controllers
             {
                 return NotFound();
             }
-            var currentUser = await _userManager.GetUserAsync(User);
-            var obj = _db.CompanyName.Where(x => x.AdminId == currentUser.Id && x.Id == Id).FirstOrDefault();
+            var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+            var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
+            var obj = _db.CompanyName.Where(x => x.AdminId == currentUser && x.Id == Id).FirstOrDefault();
             if (obj == null)
             {
                 return NotFound();
@@ -58,11 +61,12 @@ namespace SalesRegister.Controllers
             if (ModelState.IsValid)
             {
                 string uniqueId = System.Guid.NewGuid().ToString();
-                var currentUser = await _userManager.GetUserAsync(User);
+                var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+                var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
                 var companyName = new CompanyModel()
                 {
                     Id = uniqueId,
-                    AdminId = currentUser.Id,
+                    AdminId = currentUser,
                     CompanyName = companyModel.CompanyName
                 };
                 if (companyName == null)
@@ -83,8 +87,9 @@ namespace SalesRegister.Controllers
         {
             if (ModelState.IsValid)
             {
-                var currentUser = await _userManager.GetUserAsync(User);
-                var companyName = _db.CompanyName.Where(x => x.AdminId == currentUser.Id && x.Id == Id).FirstOrDefault();
+                var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+                var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
+                var companyName = _db.CompanyName.Where(x => x.AdminId == currentUser && x.Id == Id).FirstOrDefault();
                 companyName.CompanyName = companyModel.CompanyName;
                 _db.CompanyName.Update(companyName);
                 _db.SaveChanges();
@@ -96,8 +101,9 @@ namespace SalesRegister.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(string Id)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
-            var companyName = _db.CompanyName.Where(x => x.AdminId == currentUser.Id && x.Id == Id).FirstOrDefault();
+            var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+            var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
+            var companyName = _db.CompanyName.Where(x => x.AdminId == currentUser && x.Id == Id).FirstOrDefault();
             _db.CompanyName.Remove(companyName);
             _db.SaveChanges();
             return Ok();

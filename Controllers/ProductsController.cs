@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SalesRegister.ApplicationDbContex;
 using SalesRegister.DTOs;
 using SalesRegister.HelperClass;
@@ -13,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SalesRegister.Controllers
@@ -36,9 +38,11 @@ namespace SalesRegister.Controllers
         //   [AllowAnonymous]
         public async Task<ActionResult<ProductsModel>> GetAll()
         {
-            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+            var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.CreatedById).FirstOrDefault();
 
-            IEnumerable<ProductsModel> objList = _db.Products.Where(x => x.AdminId == currentUser.Id);
+            IEnumerable<ProductsModel> objList = _db.Products.Where(x => x.AdminId == currentUser).Include(y => y.ProductMeasures);
+
             return Ok(objList);
         }
 
@@ -61,8 +65,10 @@ namespace SalesRegister.Controllers
             {
                 return NotFound();
             }
-            var currentUser = await _userManager.GetUserAsync(User);
-            var obj = _db.Products.Where(x => x.AdminId == currentUser.Id && x.Id == Id).FirstOrDefault();
+            var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+            var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.CreatedById).FirstOrDefault();
+
+            var obj = _db.Products.Where(x => x.AdminId == currentUser && x.Id == Id).Include(y => y.ProductMeasures).FirstOrDefault();
             if (obj == null)
             {
                 return NotFound();
@@ -99,7 +105,9 @@ namespace SalesRegister.Controllers
             if (ModelState.IsValid)
             {
                 string uniqueId = System.Guid.NewGuid().ToString();
-                var currentUser = await _userManager.GetUserAsync(User);
+                var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+                var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
+
                 var produtName = (productsModel.ProductName).ToUpper().Substring(0, 3);
                 var rnd = new Random();
                 int num = rnd.Next(50);
@@ -108,7 +116,8 @@ namespace SalesRegister.Controllers
                     Id = uniqueId,
                     ProductCode = produtName + num,
                     ProductName = (productsModel.ProductName).ToUpper(),
-                    AdminId = currentUser.Id
+                    AdminId = currentUser,
+                    ProductMeasures = new List<ProductMeasureModel>()
                 };
                 foreach (var item in productsModel.ProductMeasures)
                 {
@@ -120,7 +129,7 @@ namespace SalesRegister.Controllers
                         Measure = item.Measure,
                         ProductId = product.Id,
                         QtyPerMeasure = item.QtyPerMeasure,
-                        UnitPrice = item.UnitPrice
+                        UnitPrice = item.UnitPrice,
                     };
 
                     product.ProductMeasures.Add(prodMeasure);
@@ -141,11 +150,13 @@ namespace SalesRegister.Controllers
         {
             if (ModelState.IsValid)
             {
-                var currentUser = await _userManager.GetUserAsync(User);
+                var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+                var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
+
                 var productName = (productsModel.ProductName).ToUpper().Substring(0, 3);
                 var rnd = new Random();
                 int num = rnd.Next(50);
-                var product = _db.Products.Where(x => x.Id == Id && x.AdminId == currentUser.Id).FirstOrDefault();
+                var product = _db.Products.Where(x => x.Id == Id && x.AdminId == currentUser).Include(y => y.ProductMeasures).FirstOrDefault();
                 product.ProductName = (productsModel.ProductName).ToUpper();
                 product.ProductCode = productName + num;
                 product.ProductMeasures = productsModel.ProductMeasures;
@@ -219,8 +230,10 @@ namespace SalesRegister.Controllers
 
         public async Task<ActionResult> DeleteMeasure(string ProductId, string MeasureId)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
-            var product = _db.Products.Where(x => x.Id == ProductId && x.AdminId == currentUser.Id).FirstOrDefault();
+            var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+            var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
+
+            var product = _db.Products.Where(x => x.Id == ProductId && x.AdminId == currentUser).FirstOrDefault();
             var productMeasure = product.ProductMeasures.Where(x => x.Id != MeasureId).ToList();
             product.ProductMeasures = productMeasure;
             _db.Products.UpdateRange(product);
@@ -232,8 +245,9 @@ namespace SalesRegister.Controllers
 
         public async Task<ActionResult> Delete(string Id)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
-            var product = _db.Products.Where(x => x.Id == Id && x.AdminId == currentUser.Id).FirstOrDefault();
+            var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+            var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
+            var product = _db.Products.Where(x => x.Id == Id && x.AdminId == currentUser).Include(y => y.ProductMeasures).FirstOrDefault();
 
             _db.Products.Remove(product);
             _db.SaveChanges();

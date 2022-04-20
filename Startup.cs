@@ -121,12 +121,36 @@ namespace SalesRegister
 
 
             services.AddIdentity<StaffModel, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+               // .AddDefaultTokenProviders();
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(options =>
+
+            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            //        .AddJwtBearer(options =>
+            //        {
+            //            options.TokenValidationParameters = new TokenValidationParameters
+            //            {
+
+            //                ValidateIssuer = false,
+            //                ValidateAudience = false,
+            //                ValidateLifetime = true,
+            //                ValidateIssuerSigningKey = true,
+            //                IssuerSigningKey = new SymmetricSecurityKey(
+            //                    Encoding.UTF8.GetBytes(Configuration["keyjwt"])),
+            //                ClockSkew = TimeSpan.Zero
+
+            //            };
+            //        });
+            services.AddAuthentication(o =>
+            {
+                o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options =>
                     {
+                        options.SaveToken = true;
+                        //options.RequireHttpsMetadata = false;
                         options.TokenValidationParameters = new TokenValidationParameters
                         {
 
@@ -140,7 +164,6 @@ namespace SalesRegister
 
                         };
                     });
-
 
             services.AddAuthorization(options =>
             {
@@ -189,7 +212,8 @@ namespace SalesRegister
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll", builder =>
-               builder.AllowAnyOrigin()
+               builder.SetIsOriginAllowed(origin => true)
+               .AllowCredentials()
                .AllowAnyMethod()
                .AllowAnyHeader());
                 //var frontendURL = Configuration.GetValue<string>("frontend_url");
@@ -211,7 +235,7 @@ namespace SalesRegister
                 
             }
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SalesRegister v1"));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "SalesRegister v1")) ;
             app.UseHttpsRedirection();
 
             app.UseRouting();

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SalesRegister.DTOs
 {
-    public class StaffModelDTO
+    public class StaffEditModelDTO
     {
         [Required]
         public string FirstName { get; set; }
@@ -20,7 +20,7 @@ namespace SalesRegister.DTOs
 
         [Required]
         public string Gender { get; set; }
-      
+        [Required]
         public string Department { get; set; }
 
         [Required]
@@ -32,17 +32,6 @@ namespace SalesRegister.DTOs
 
         [Required]
         public string PhoneNumber { get; set; }
-
-        [Required]
-        [DataType(DataType.Password)]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long", MinimumLength = 6)]
-        public string Password { get; set; }
-
-        [DataType(DataType.Password)]
-        [Display(Name = "Confirm Password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match")]
-        public string ConfirmPassword { get; set; }
-
 
     }
 }

@@ -159,3 +159,4 @@ C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\Quartz.AspNetCore.dll
 C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\Quartz.Extensions.DependencyInjection.dll
 C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\Quartz.Extensions.Hosting.dll
 C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\EFCore.NamingConventions.dll
+C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\Microsoft.AspNet.Identity.Core.dll

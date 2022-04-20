@@ -46,29 +46,30 @@ namespace SalesRegister.Controllers
             _configuration = configuration;
         }
 
-
+        [Authorize]
         //Get all staffs
         [HttpGet("staff")]
         public async Task<ActionResult<StaffModelDTO>> GetAll()
         {
             try
             {
-                var currentUser = await _userManager.GetUserAsync(User);
+                var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+                var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
                 //if (currentUser == null) return Challenge();
-                var staffs = (from user in _db.Users.Where(x => x.CreatedById == currentUser.Id)
-                              select new StaffModel
-                              {
-                                  FirstName = user.FirstName,
-                                  LastName = user.LastName,
-                                  Gender=user.Gender,
-                                  UserName=user.UserName,
-                                  StaffId=user.StaffId,
-                                  Address=user.Address,
-                                  ProfilePicture=user.ProfilePicture,
-                                  DateOfBirth=user.DateOfBirth,
-                                  PhoneNumber=user.PhoneNumber
-                              }
-                         ).ToList();
+                var staffs =  _db.Users.Where(x => x.CreatedById == currentUser).ToList();
+                         //     select new StaffModel
+                         //     {
+                         //         FirstName = user.FirstName,
+                         //         LastName = user.LastName,
+                         //         Gender = user.Gender,
+                         //         UserName = user.UserName,
+                         //         StaffId = user.StaffId,
+                         //         Address = user.Address,
+                         //         ProfilePicture = user.ProfilePicture,
+                         //         DateOfBirth = user.DateOfBirth,
+                         //         PhoneNumber = user.PhoneNumber
+                         //     }
+                         //);.ToList();
                 
 
                 //  var users = await _userManager.FindByIdAsync(staffs);
@@ -88,8 +89,9 @@ namespace SalesRegister.Controllers
         {
             try
             {
-                var currentUser = await _userManager.GetUserAsync(User);
-                var staff = _db.Users.Where(u =>u.CreatedById == currentUser.Id && u.Id == Id).Select(u => u.Id).FirstOrDefault();
+                var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+                var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
+                var staff = _db.Users.Where(u =>u.CreatedById == currentUser && u.Id == Id).Select(u => u.Id).FirstOrDefault();
                 var users = await _userManager.FindByIdAsync(staff);
                 if (staff == null)
                 {
@@ -113,10 +115,11 @@ namespace SalesRegister.Controllers
         {
             try
             {
-                var currentUser = await _userManager.GetUserAsync(User);
-                var staff = _db.Users.Where(u => u.Id == currentUser.Id && u.Id == Id).Select(u => u.Id).FirstOrDefault();
-                 var company = _db.CompanyName.Where(x => x.AdminId == currentUser.Id && x.Id == Id).FirstOrDefault();
-                var users = await _userManager.FindByIdAsync(staff);
+                var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+                var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
+                var staff = _db.Users.Where(u => u.Id == currentUser && u.Id == Id).FirstOrDefault();
+                 var company = _db.CompanyName.Where(x => x.AdminId == currentUser).FirstOrDefault();
+                //var users = await _userManager.FindByIdAsync(staff);
                 if (staff == null)
                 {
                     return NotFound();
@@ -170,7 +173,7 @@ namespace SalesRegister.Controllers
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration ["keyjwt"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expiration = DateTime.UtcNow.AddYears(1);
+            var expiration = DateTime.UtcNow.AddMinutes(10);
             var token = new JwtSecurityToken(issuer: null, audience: null, claims: claims,
                 expires: expiration, signingCredentials: creds);
             return new AuthenticationResponse()
@@ -193,7 +196,8 @@ namespace SalesRegister.Controllers
                 {
                     //var staff = _mapper.Map<StaffModel>(model);
                     var staff = new StaffModel();
-                    var currentUser = await _userManager.GetUserAsync(User);
+                    var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+                    var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
                     var newStaff = _db.Users.Where(u => u.UserName == model.UserName).Select(u => u.Id).FirstOrDefault();
                     var newStaff2 = await _userManager.FindByIdAsync(newStaff);
                     newStaff2.DateOfBirth = model.DateOfBirth;
@@ -249,7 +253,8 @@ namespace SalesRegister.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var currentUser = await _userManager.GetUserAsync(User);
+                    var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+                    var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
                     var staff = new StaffModel
                     {
                         UserName = model.UserName,
@@ -260,9 +265,9 @@ namespace SalesRegister.Controllers
                         LastName = model.LastName,
                         PhoneNumber = model.PhoneNumber,
                         Address = model.Address,
-                        CreatedById = currentUser.Id
+                        CreatedById = currentUser
                     };
-                    var getCompanyName = _db.CompanyName.Where(x => x.AdminId == currentUser.Id).Select(x=>x.CompanyName).FirstOrDefault();
+                    var getCompanyName = _db.CompanyName.Where(x => x.AdminId == currentUser).Select(x=>x.CompanyName).FirstOrDefault();
                     var companyName = getCompanyName.Substring(0, 3);
                     var departmentName = model.Department.Substring(0, 3);
                     var rnd = new Random();
@@ -301,13 +306,14 @@ namespace SalesRegister.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var currentUser = await _userManager.GetUserAsync(User);
+                    var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+                    var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
                     //to get the Id of the staff from the database
                     var del = _db.Users
                            .Where(u => u.Id == Id)
                            .Select(u => u.Id)
                            .FirstOrDefault();
-                    var company = _db.CompanyName.Where(x => x.AdminId == currentUser.Id).FirstOrDefault();
+                    var company = _db.CompanyName.Where(x => x.AdminId == currentUser).FirstOrDefault();
                     company.CompanyName = model.CompanyName;
                     //get User Data from del (using the Id to get the column)
                     var users = await _userManager.FindByIdAsync(del);
@@ -346,13 +352,14 @@ namespace SalesRegister.Controllers
 
         //edit staff information
         [HttpPut("staff/{Id}")]
-        public async Task<IActionResult> Update(string Id, [FromForm] StaffModelDTO model)
+        public async Task<IActionResult> Update(string Id, [FromForm] StaffEditModelDTO model)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    var currentUser = await _userManager.GetUserAsync(User);
+                    var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+                    var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
                     //to get the Id of the staff from the database
                     var del = _db.Users
                            .Where(u => u.Id == Id)
@@ -366,7 +373,6 @@ namespace SalesRegister.Controllers
                     users.Gender = model.Gender;
                     users.PhoneNumber = model.PhoneNumber;
                     users.Address = model.Address;
-                    
                     if (model.ProfilePicture != null)
                     {
                         users.ProfilePicture = await _fileStorageService.SaveFile(containerName, model.ProfilePicture);
@@ -400,10 +406,11 @@ namespace SalesRegister.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var currentUser = await _userManager.GetUserAsync(User);
-                   // var staff = new StaffModel();
+                    var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+                    var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
+                    // var staff = new StaffModel();
                     var editPassword = _db.Users
-                              .Where(u => u.UserName == register.UserName && u.CreatedById == currentUser.Id)
+                              .Where(u => u.UserName == register.UserName && u.CreatedById == currentUser)
                               .FirstOrDefault();
                   //  var users = _userManager.FindByIdAsync(editPassword);
                     //var result = await _userManager.UpdateAsync(register);
@@ -467,11 +474,10 @@ namespace SalesRegister.Controllers
                 new Claim("email", login.Email)
             };
 
-
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["keyjwt"]));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expiration = DateTime.UtcNow.AddYears(1);
+            var expiration = DateTime.UtcNow.AddMinutes(20);
             var token = new JwtSecurityToken(issuer: null, audience: null, claims: claims,
                 expires: expiration, signingCredentials: creds);
             return new AuthenticationResponse()
@@ -539,9 +545,10 @@ namespace SalesRegister.Controllers
 
             try
             {
-                var currentUser = await _userManager.GetUserAsync(User);
+                var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+                var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
                 var del = _db.Users
-                            .Where(u => u.CreatedById == currentUser.Id && u.Id == Id)
+                            .Where(u => u.CreatedById == currentUser && u.Id == Id)
                             .Select(u => u.Id)
                             .FirstOrDefault();
                 //get User Data from del
