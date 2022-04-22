@@ -7,10 +7,6 @@ namespace SalesRegister.DTOs
 {
     public class StockBalanceModelDTO
     {
-        public int Id { get; set; }
-
-        public string ProductCode { get; set; }
-
         public string Product { get; set; }
 
         public string Measure { get; set; }

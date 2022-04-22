@@ -10,8 +10,8 @@ using SalesRegister.ApplicationDbContex;
 namespace SalesRegister.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220419161153_qtyInt")]
-    partial class qtyInt
+    [Migration("20220421161807_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -173,8 +173,10 @@ namespace SalesRegister.Migrations
 
             modelBuilder.Entity("SalesRegister.Model.CustomerInvoiceDetailModel", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("AdminId")
                         .HasColumnType("text");
@@ -182,8 +184,8 @@ namespace SalesRegister.Migrations
                     b.Property<float>("Amount")
                         .HasColumnType("real");
 
-                    b.Property<string>("CustomerInvoiceModelId")
-                        .HasColumnType("text");
+                    b.Property<int?>("CustomerInvoiceModelId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp without time zone");
@@ -223,8 +225,10 @@ namespace SalesRegister.Migrations
 
             modelBuilder.Entity("SalesRegister.Model.CustomerInvoiceModel", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("AdminId")
                         .HasColumnType("text");

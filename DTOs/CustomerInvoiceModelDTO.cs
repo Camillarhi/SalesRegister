@@ -11,14 +11,9 @@ namespace SalesRegister.DTOs
 
         [Required]
         public string CustomerName { get; set; }
-
         [Required]
-        public string InvoiceId { get; set; }
-
-        public DateTime Date { get; set; }
-
+        public string PhoneNumber { get; set; }
         public float Total { get; set; }
-
         public List<CustomerInvoiceDetailModelDTO> InvoiceDetail { get; set; }
     }
 }

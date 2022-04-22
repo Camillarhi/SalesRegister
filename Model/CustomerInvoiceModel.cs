@@ -8,11 +8,13 @@ namespace SalesRegister.Model
 {
     public class CustomerInvoiceModel
     {
-        [Required]
-        public string Id { get; set; }
+        [Key]
+        public int Id { get; set; }
 
         [Required]
         public string CustomerName { get; set; }
+        [Required]
+        public string PhoneNumber { get; set; }
 
         [Required]
         public string InvoiceId { get; set; }

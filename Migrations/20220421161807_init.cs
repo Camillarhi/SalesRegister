@@ -98,8 +98,8 @@ namespace SalesRegister.Migrations
                 name: "CustomerInvoice",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CustomerName = table.Column<string>(type: "text", nullable: false)
                         .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
                     InvoiceId = table.Column<string>(type: "text", nullable: false)
@@ -353,8 +353,8 @@ namespace SalesRegister.Migrations
                 name: "CustomerInvoiceDetailModel",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     InvoiceId = table.Column<string>(type: "text", nullable: false)
                         .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
                     AdminId = table.Column<string>(type: "text", nullable: true)
@@ -371,8 +371,7 @@ namespace SalesRegister.Migrations
                     UnitPrice = table.Column<float>(type: "real", nullable: false),
                     Amount = table.Column<float>(type: "real", nullable: false),
                     Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    CustomerInvoiceModelId = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation")
+                    CustomerInvoiceModelId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {

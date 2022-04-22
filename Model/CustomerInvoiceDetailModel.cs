@@ -9,8 +9,8 @@ namespace SalesRegister.Model
 {
     public class CustomerInvoiceDetailModel
     {
-        [Required]
-        public  string Id { get; set; }
+        [Key]
+        public int Id { get; set; }
 
         [Required]
         [ForeignKey(nameof(CustomerInvoiceModel.InvoiceId))]

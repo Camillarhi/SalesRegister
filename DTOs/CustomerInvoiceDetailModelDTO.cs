@@ -11,9 +11,6 @@ namespace SalesRegister.DTOs
     public class CustomerInvoiceDetailModelDTO
     {
         [Required]
-        public int InvoiceId { get; set; }
-
-        [Required]
         public string Product { get; set; }
 
         [Required]
@@ -36,6 +33,5 @@ namespace SalesRegister.DTOs
 
         public float Amount { get; set; }
 
-        public DateTime Date { get; set; }
     }
 }

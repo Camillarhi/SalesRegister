@@ -10,8 +10,8 @@ using SalesRegister.ApplicationDbContex;
 namespace SalesRegister.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220406164438_init")]
-    partial class init
+    [Migration("20220421175822_phonenumber")]
+    partial class phonenumber
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -173,8 +173,10 @@ namespace SalesRegister.Migrations
 
             modelBuilder.Entity("SalesRegister.Model.CustomerInvoiceDetailModel", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("AdminId")
                         .HasColumnType("text");
@@ -182,8 +184,8 @@ namespace SalesRegister.Migrations
                     b.Property<float>("Amount")
                         .HasColumnType("real");
 
-                    b.Property<string>("CustomerInvoiceModelId")
-                        .HasColumnType("text");
+                    b.Property<int?>("CustomerInvoiceModelId")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp without time zone");
@@ -223,8 +225,10 @@ namespace SalesRegister.Migrations
 
             modelBuilder.Entity("SalesRegister.Model.CustomerInvoiceModel", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
                     b.Property<string>("AdminId")
                         .HasColumnType("text");
@@ -237,6 +241,10 @@ namespace SalesRegister.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("InvoiceId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -270,6 +278,10 @@ namespace SalesRegister.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Measure")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("text");
 

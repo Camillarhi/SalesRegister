@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SalesRegister.ApplicationDbContex;
 using SalesRegister.DTOs;
 using SalesRegister.HelperClass;
@@ -68,6 +69,7 @@ namespace SalesRegister.Controllers
                 var totAmt = new List<float>();
                 record.AdminId = currentUser;
                 record.CustomerName = customerInvoiceModel.CustomerName;
+                record.PhoneNumber = customerInvoiceModel.PhoneNumber;
                 record.Date = DateTime.Now;
                 var custName =customerInvoiceModel.CustomerName.Substring(0, 3);
                 var rnd = new Random();
@@ -79,22 +81,27 @@ namespace SalesRegister.Controllers
 
                 foreach (var item in customerInvoiceModel.InvoiceDetail)
                 {
-                    var recordDetail = new CustomerInvoiceDetailModel();
-                    recordDetail.AdminId = record.AdminId;
-                    recordDetail.Quantity = item.Quantity;
-                    recordDetail.Product = item.Product;
-                    recordDetail.Date = record.Date;
-                    recordDetail.InvoiceId = record.InvoiceId;
-                    var product = _db.Products.Find(item.ProductId);
+                    var recordDetail = new CustomerInvoiceDetailModel
+                    {
+                        AdminId = record.AdminId,
+                        Quantity = item.Quantity,
+                        Measure = item.Measure,
+                        MeasureId = item.MeasureId,
+                        ProductId = item.ProductId,
+                        Product = item.Product,
+                        Date = record.Date,
+                        InvoiceId = record.InvoiceId
+                    };
+                    var product = _db.Products.Where(x => x.AdminId == currentUser && x.Id == item.ProductId).Include(y => y.ProductMeasures).FirstOrDefault();
                     var unitPrice = product.ProductMeasures.Find(x => x.Id == item.MeasureId && x.ProductId == item.ProductId).UnitPrice;
                     //var unitPrice = _db.Products.Where(u => u.Measure == recordDetail.Measure && u.Product == recordDetail.Product).FirstOrDefault().UnitPrice;
                     recordDetail.UnitPrice = unitPrice;
                     recordDetail.Amount = unitPrice * recordDetail.Quantity;
                     var productsQty = _db.StockBalances.Where(u => u.Measure == recordDetail.Measure && u.Product == recordDetail.Product).Select(u => u.Id).FirstOrDefault();
-                    var update = _db.StockBalances.Find(productsQty);
-                    update.Quantity -= recordDetail.Quantity;
+                    //var update = _db.StockBalances.Find(productsQty);
+                    //update.Quantity -= recordDetail.Quantity;
 
-                    _db.StockBalances.Update(update);
+                    //_db.StockBalances.Update(update);
                     record.InvoiceDetail.Add(recordDetail);
                 }
                 for (var i = 0; i < record.InvoiceDetail.Count; i++)
@@ -110,7 +117,9 @@ namespace SalesRegister.Controllers
                     dailySales.Product = item.Product;
                     dailySales.Measure = item.Measure;
                     dailySales.Date = DateTime.Now;
-                    var product = _db.Products.Find(item.ProductId);
+                    dailySales.PhoneNumber = customerInvoiceModel.PhoneNumber;
+                    dailySales.CustomerName = record.CustomerName;
+                    var product = _db.Products.Where(x => x.AdminId == currentUser && x.Id == item.ProductId).Include(y => y.ProductMeasures).FirstOrDefault();
                     var unitPrice = product.ProductMeasures.Find(x => x.Id == item.MeasureId && x.ProductId == item.ProductId).UnitPrice;
                     dailySales.UnitPrice = unitPrice;
                     dailySales.Amount = unitPrice * dailySales.Quantity;

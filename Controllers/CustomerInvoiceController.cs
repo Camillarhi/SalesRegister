@@ -37,7 +37,7 @@ namespace SalesRegister.Controllers
 
         [HttpGet("{Id}")]
 
-        public async Task<ActionResult> Get(string Id)
+        public async Task<ActionResult> Get(int Id)
         {
             var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
             var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.CreatedById).FirstOrDefault();
@@ -57,7 +57,7 @@ namespace SalesRegister.Controllers
        
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(string Id)
+        public async Task<ActionResult> Delete(int Id)
         {
             var currentUser = await _userManager.GetUserAsync(User);
             var customer = _db.CustomerInvoice.Where(x => x.AdminId == currentUser.CreatedById && x.Id == Id).Include(y => y.InvoiceDetail).FirstOrDefault();
