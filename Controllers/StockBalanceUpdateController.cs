@@ -1,32 +1,36 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using SalesRegister.ApplicationDbContex;
 using SalesRegister.DTOs;
 using SalesRegister.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SalesRegister.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductBalanceUpdateController : ControllerBase
+    public class StockBalanceUpdateController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
 
-        public ProductBalanceUpdateController(ApplicationDbContext db)
+        public StockBalanceUpdateController(ApplicationDbContext db)
         {
             _db = db;
         }
 
         [HttpGet]
 
-        public ActionResult<StockBalanceUpdateModelDTO> GetAll()
+        public ActionResult<StockBalanceUpdateModel> GetAll()
         {
-            IEnumerable<StockBalanceUpdateModel> objList = _db.StockBalanceUpdates;
+            var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+            var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.CreatedById).FirstOrDefault();
+            IEnumerable<StockBalanceUpdateModel> objList = _db.StockBalanceUpdates.Where(x => x.AdminId == currentUser).Include(x => x.stockBalanceUpdateDetails);
 
             return Ok(objList);
         }
@@ -36,11 +40,13 @@ namespace SalesRegister.Controllers
 
         public ActionResult Get(int? Id)
         {
+            var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+            var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.CreatedById).FirstOrDefault();
             if (Id == 0 || Id == null)
             {
                 return NotFound();
             }
-            var obj = _db.StockBalanceUpdates.Find(Id);
+            var obj = _db.StockBalanceUpdates.Where(x => x.AdminId == currentUser && x.Id==Id).Include(x => x.stockBalanceUpdateDetails);
 
 
             if (obj == null)
@@ -52,7 +58,7 @@ namespace SalesRegister.Controllers
 
        [HttpPost]
 
-        public IActionResult PostStockBalanceUpdate()
+        public IActionResult PostStockBalanceUpdate([FromBody] StockBalanceUpdateModel stock)
         {
             string connectionString = @"User ID=postgres;Password=rita20;Server=localhost;Port=5432;Database=SalesRegister";
             using (SqlConnection sourceConnection = new SqlConnection(connectionString))

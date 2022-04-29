@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SalesRegister.DTOs
 {
-    public class StockBalanceUpdateModelDTO
+    public class StockBalanceUpdateDetailsModelDTO
     {
         public string Product { get; set; }
 

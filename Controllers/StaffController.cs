@@ -91,14 +91,14 @@ namespace SalesRegister.Controllers
             {
                 var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
                 var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
-                var staff = _db.Users.Where(u =>u.CreatedById == currentUser && u.Id == Id).Select(u => u.Id).FirstOrDefault();
-                var users = await _userManager.FindByIdAsync(staff);
+                var staff = _db.Users.Where(u =>u.CreatedById == currentUser && u.Id == Id).FirstOrDefault();
+                var role = await _userManager.GetRolesAsync(staff);
                 if (staff == null)
                 {
                     return NotFound();
                 }
                 //return _mapper.Map<StaffModelDTO>(users);
-                return Ok(users);
+                return Ok(new { staff, role });
             }
 
             catch (Exception ex)
@@ -118,13 +118,14 @@ namespace SalesRegister.Controllers
                 var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
                 var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
                 var staff = _db.Users.Where(u => u.Id == currentUser && u.Id == Id).FirstOrDefault();
-                 var company = _db.CompanyName.Where(x => x.AdminId == currentUser).FirstOrDefault();
+                var role=await _userManager.GetRolesAsync(staff);
+                var company = _db.CompanyName.Where(x => x.AdminId == currentUser).FirstOrDefault();
                 //var users = await _userManager.FindByIdAsync(staff);
                 if (staff == null)
                 {
                     return NotFound();
                 }
-                var profile = new {staff, company };
+                var profile = new {staff, role, company };
                 //return _mapper.Map<StaffModelDTO>(users);
                 return Ok(profile);
             }

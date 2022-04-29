@@ -177,7 +177,7 @@ namespace SalesRegister.Controllers
             return Ok();
         }
 
-       [HttpPatch]
+       [HttpPatch("{Id}")]
 
        public ActionResult Approve (int id)
         {

@@ -146,7 +146,7 @@ namespace SalesRegister.Controllers
 
         [HttpPut("{id}")]
 
-        public async Task<ActionResult> Put(string Id, [FromBody] ProductsModel productsModel)
+        public async Task<ActionResult> Put(string Id, [FromBody] ProductsModelDTO productsModel)
         {
             if (ModelState.IsValid)
             {
@@ -159,37 +159,39 @@ namespace SalesRegister.Controllers
                 var product = _db.Products.Where(x => x.Id == Id && x.AdminId == currentUser).Include(y => y.ProductMeasures).FirstOrDefault();
                 product.ProductName = (productsModel.ProductName).ToUpper();
                 product.ProductCode = productName + num;
-                product.ProductMeasures = productsModel.ProductMeasures;
-                //foreach (var item in productsModel.ProductMeasures)
-                //{
-                //    var productMeasure = product.ProductMeasures.Where(x => x.Id == item.Id).FirstOrDefault();
-                //    if (productMeasure != null)
-                //    {
-                //        productMeasure.CostPrice = item.CostPrice;
-                //        productMeasure.Measure = item.Measure;
-                //        productMeasure.QtyPerMeasure = item.QtyPerMeasure;
-                //        productMeasure.UnitPrice = item.UnitPrice;
+                product.ProductMeasures = new List<ProductMeasureModel>();
+                foreach (var item in productsModel.ProductMeasures)
+                {
+                    string measureUniqueId = System.Guid.NewGuid().ToString();
+                    var productMeasure = new ProductMeasureModel
+                    {
+                        Id = measureUniqueId,
+                        ProductId = product.Id,
+                        CostPrice = item.CostPrice,
+                        Measure = item.Measure,
+                        QtyPerMeasure = item.QtyPerMeasure,
+                        UnitPrice = item.UnitPrice
+                    };
+                    product.ProductMeasures.Add(productMeasure);
+                }
+                    //    else
+                    //    {
+                    //        string measureUniqueId = System.Guid.NewGuid().ToString();
+                    //        var prodMeasure = new ProductMeasureModel
+                    //        {
+                    //            Id = measureUniqueId,
+                    //            CostPrice = item.CostPrice,
+                    //            Measure = item.Measure,
+                    //            ProductId = product.Id,
+                    //            QtyPerMeasure = item.QtyPerMeasure,
+                    //            UnitPrice = item.UnitPrice
+                    //        };
 
-                //        product.ProductMeasures.Add(productMeasure);
-                //    }
-                //    else
-                //    {
-                //        string measureUniqueId = System.Guid.NewGuid().ToString();
-                //        var prodMeasure = new ProductMeasureModel
-                //        {
-                //            Id = measureUniqueId,
-                //            CostPrice = item.CostPrice,
-                //            Measure = item.Measure,
-                //            ProductId = product.Id,
-                //            QtyPerMeasure = item.QtyPerMeasure,
-                //            UnitPrice = item.UnitPrice
-                //        };
+                    //        product.ProductMeasures.Add(prodMeasure);
+                    //    }
+                    //}
 
-                //        product.ProductMeasures.Add(prodMeasure);
-                //    }
-                //}
-
-                _db.Products.UpdateRange(product);
+                    _db.Products.Update(product);
                 _db.SaveChanges();
             }
             return Ok();

@@ -6,15 +6,24 @@ using System.Threading.Tasks;
 
 namespace SalesRegister.Model
 {
-    public class StockBalanceUpdateModel
+    public class StockBalanceUpdateDetailsModel
     {
         [Key]
         public int Id { get; set; }
+
         [Required]
-        public DateTime Date { get; set; }
+        public string ProductCode { get; set; }
+
+        [Required]
+        public string Product { get; set; }
+        [Required]
+        public string Measure { get; set; }
+        [Required]
+        public int Quantity { get; set; }
         [Required]
         public string AdminId { get; set; }
+
         [Required]
-        public List<StockBalanceUpdateDetailsModel> stockBalanceUpdateDetails { get; set; }
+        public DateTime Date { get; set; }
     }
 }

@@ -20,24 +20,25 @@ namespace SalesRegister.Controllers
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
             optionsBuilder.UseNpgsql(@"User ID=postgres;Password=rita20;Server=localhost;Port=5432;Database=SalesRegister");
             using var _db = new ApplicationDbContext(optionsBuilder.Options);
-            var stockBalancesUpdate = new List<StockBalanceUpdateModel>();
-           
+            var stockBalancesUpdate = new StockBalanceUpdateModel();
+            stockBalancesUpdate.Date = DateTime.Now;
+            stockBalancesUpdate.stockBalanceUpdateDetails = new List<StockBalanceUpdateDetailsModel>();
             var stockBalances = _db.StockBalances.ToList();
-            var date = DateTime.Now;
+            //stockBalancesUpdate.AdminId =
             foreach (var stock in stockBalances)
             {
-                var stockBalanceUpdate = new StockBalanceUpdateModel
+                var stockBalanceUpdate = new StockBalanceUpdateDetailsModel
                 {
                     AdminId = stock.AdminId,
                     Measure = stock.Measure,
                     Product = stock.Product,
                     ProductCode = stock.ProductCode,
                     Quantity = stock.Quantity,
-                    Date = date
+                    Date = stockBalancesUpdate.Date
                 };
-                stockBalancesUpdate.Add(stockBalanceUpdate);
+                stockBalancesUpdate.stockBalanceUpdateDetails.Add(stockBalanceUpdate);
             }
-            await _db.StockBalanceUpdates.AddRangeAsync(stockBalancesUpdate);
+            await _db.StockBalanceUpdates.AddAsync(stockBalancesUpdate);
             _db.SaveChanges();
 
         }
