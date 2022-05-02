@@ -16,12 +16,12 @@ namespace SalesRegister.Model
         [ForeignKey(nameof(ProductsModel.Id))]
         public string ProductId { get; set; }
 
-        public string Quantity { get; set; }
+        public int Quantity { get; set; }
 
         [Required]
         public string Measure { get; set; }
 
-        public string QtyPerMeasure { get; set; }
+        public int QtyPerMeasure { get; set; }
 
         //public string BarcodeImage { get; set; }
         public float CostPrice { get; set; }

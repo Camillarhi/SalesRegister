@@ -444,11 +444,13 @@ namespace SalesRegister.Controllers
                     if (result.Succeeded)
                     {
                         var user = await _userManager.FindByEmailAsync(login.Email);
+                        var role = await _userManager.GetRolesAsync(user);
                         var logedIn = new AuthenticationResponse
                         {
                             Email = user.Email,
                             Id = user.Id,
-                        };
+                            Role = role[0]
+                    };
                         return BuildToken(logedIn);
                     }
                     else
@@ -486,7 +488,8 @@ namespace SalesRegister.Controllers
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                 Email= login.Email,
                 Id=login.Id,
-                Expiration = expiration
+                Expiration = expiration,
+                Role = login.Role
             };
 
         } 
