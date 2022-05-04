@@ -70,6 +70,7 @@ namespace SalesRegister.Controllers
                     AdminId = currentUser,
                     Date=DateTime.Now,
                     SupplierName=stockInwardModelDTO.SupplierName,
+                    Approve = false,
                     stockInwardDetails=new List<StockInwardDetailsModel>()
                 };
                 if (stockInward?.Length > 0)
@@ -96,8 +97,7 @@ namespace SalesRegister.Controllers
 
                                     var qty = Convert.ToInt32(quantity);
                                     var produtName = (product).ToUpper().Substring(0, 3);
-                                    var rnd = new Random();
-                                    int num = rnd.Next(50);
+                                   
                                     var date = DateTime.Now;
                                     var productsQty = new StockInwardDetailsModel()
                                     {
@@ -106,6 +106,8 @@ namespace SalesRegister.Controllers
                                         Quantity = qty,
                                         AdminId=currentUser,
                                     };
+                                    var rnd = new Random();
+                                    int num = rnd.Next(50);
                                     var productExistInDb = _db.Products.Where(x => x.AdminId == currentUser && x.ProductName == product).Include(x => x.ProductMeasures).FirstOrDefault();
                                     if(productExistInDb == null)
                                     {
@@ -162,6 +164,8 @@ namespace SalesRegister.Controllers
                     stock.Approve = true;
                     foreach(var item in stock.stockInwardDetails)
                     {
+                        string uniqueId = System.Guid.NewGuid().ToString();
+                        string measureUniqueId = System.Guid.NewGuid().ToString();
                         var stockBalance = new StockBalanceModel
                         {
                             Measure = item.Measure,
@@ -171,58 +175,55 @@ namespace SalesRegister.Controllers
                             Quantity=item.Quantity
                         };
                         stockBalances.Add(stockBalance);
+                        var productExist = _db.Products.Where(x => x.AdminId == currentUser && x.ProductName == item.Product).Include(x => x.ProductMeasures).FirstOrDefault();
+                        if (productExist == null)
+                        {
+                            var addProduct = new ProductsModel
+                            {
+                                AdminId = currentUser,
+                                ProductCode = item.ProductCode,
+                                Id = uniqueId,
+                                ProductName = item.Product,
+                                ProductMeasures = new List<ProductMeasureModel>()
+                            };
+                            var addProductMeasure = new ProductMeasureModel
+                            {
+                                Id = measureUniqueId,
+                                Measure = item.Measure,
+                                ProductId = addProduct.Id,
+                                Quantity = item.Quantity
+                            };
+                            addProduct.ProductMeasures.Add(addProductMeasure);
+                            _db.Products.Add(addProduct);
+                            _db.SaveChanges();
+                        }
+                        else
+                        {
+                            var productMeasureExist = productExist.ProductMeasures.Where(x => x.Measure == item.Measure).FirstOrDefault();
+                            if (productMeasureExist == null)
+                            {
+                                var addProductMeasure = new ProductMeasureModel
+                                {
+                                    Id = measureUniqueId,
+                                    Measure = item.Measure,
+                                    ProductId = productExist.Id,
+                                    Quantity = item.Quantity
+                                };
+                                productExist.ProductMeasures.Add(addProductMeasure);
+                                _db.Products.Add(productExist);
+                                _db.SaveChanges();
+                            }
+                            else
+                            {
+                                productMeasureExist.Quantity = item.Quantity;
+                            }
+                        }
                     }
                     _db.StockBalances.AddRange(stockBalances);
                     _db.StockInwards.Update(stock);
                     _db.SaveChanges();
                 }
-
-
-                string uniqueId = System.Guid.NewGuid().ToString();
-                string measureUniqueId = System.Guid.NewGuid().ToString();
-              //  var productExist = _db.Products.Where(x => x.AdminId == currentUser && x.ProductName == product).Include(x => x.ProductMeasures).FirstOrDefault();
-                //if (productExist == null)
-                //{
-                //    var addProduct = new ProductsModel
-                //    {
-                //        AdminId = currentUser,
-                //        ProductCode = produtName + num,
-                //        Id = uniqueId,
-                //        ProductName = product,
-                //        ProductMeasures = new List<ProductMeasureModel>()
-                //    };
-                //    var addProductMeasure = new ProductMeasureModel
-                //    {
-                //        Id = measureUniqueId,
-                //        Measure = measure,
-                //        ProductId = addProduct.Id,
-                //        Quantity = qty
-                //    };
-                //    addProduct.ProductMeasures.Add(addProductMeasure);
-                //    _db.Products.Add(addProduct);
-                //    _db.SaveChanges();
-                //}
-                //else
-                //{
-                //    var productMeasureExist = productExist.ProductMeasures.Where(x => x.Measure == measure).FirstOrDefault();
-                //    if (productMeasureExist == null)
-                //    {
-                //        var addProductMeasure = new ProductMeasureModel
-                //        {
-                //            Id = measureUniqueId,
-                //            Measure = measure,
-                //            ProductId = productExist.Id,
-                //            Quantity = qty
-                //        };
-                //        productExist.ProductMeasures.Add(addProductMeasure);
-                //        _db.Products.Add(productExist);
-                //        _db.SaveChanges();
-                //    }
-                //    else
-                //    {
-                //        productMeasureExist.Quantity = qty;
-                //    }
-                //}
+               
             }
             return Ok();
         }
