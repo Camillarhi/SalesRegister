@@ -8,21 +8,14 @@ namespace SalesRegister.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterDatabase()
-                .Annotation("Npgsql:CollationDefinition:my_collation", "en-u-ks-primary,en-u-ks-primary,icu,False");
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation")
                 },
                 constraints: table =>
                 {
@@ -33,40 +26,24 @@ namespace SalesRegister.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    FirstName = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    LastName = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    Gender = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: true),
+                    LastName = table.Column<string>(type: "text", nullable: true),
+                    Gender = table.Column<string>(type: "text", nullable: true),
                     DateOfBirth = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    Address = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    ProfilePicture = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    StaffId = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    CreatedById = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
+                    Address = table.Column<string>(type: "text", nullable: true),
+                    ProfilePicture = table.Column<string>(type: "text", nullable: true),
+                    StaffId = table.Column<string>(type: "text", nullable: true),
+                    CreatedById = table.Column<string>(type: "text", nullable: true),
+                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    PasswordHash = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    SecurityStamp = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    PhoneNumber = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
+                    PasswordHash = table.Column<string>(type: "text", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "text", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
                     PhoneNumberConfirmed = table.Column<bool>(type: "boolean", nullable: false),
                     TwoFactorEnabled = table.Column<bool>(type: "boolean", nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
@@ -82,12 +59,9 @@ namespace SalesRegister.Migrations
                 name: "CompanyName",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    CompanyName = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    CompanyName = table.Column<string>(type: "text", nullable: false),
                     AdminId = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation")
                 },
                 constraints: table =>
                 {
@@ -100,13 +74,11 @@ namespace SalesRegister.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CustomerName = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    InvoiceId = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
+                    CustomerName = table.Column<string>(type: "text", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: false),
+                    InvoiceId = table.Column<string>(type: "text", nullable: false),
                     Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    AdminId = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
+                    AdminId = table.Column<string>(type: "text", nullable: true),
                     Total = table.Column<float>(type: "real", nullable: false)
                 },
                 constraints: table =>
@@ -121,17 +93,14 @@ namespace SalesRegister.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
-                    Product = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    Measure = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
+                    Product = table.Column<string>(type: "text", nullable: false),
+                    Measure = table.Column<string>(type: "text", nullable: false),
                     UnitPrice = table.Column<float>(type: "real", nullable: false),
                     Amount = table.Column<float>(type: "real", nullable: false),
                     Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    CustomerName = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
+                    CustomerName = table.Column<string>(type: "text", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: false),
                     AdminId = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation")
                 },
                 constraints: table =>
                 {
@@ -145,7 +114,6 @@ namespace SalesRegister.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Department = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation")
                 },
                 constraints: table =>
                 {
@@ -156,14 +124,10 @@ namespace SalesRegister.Migrations
                 name: "Products",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    ProductCode = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    ProductName = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    ProductCode = table.Column<string>(type: "text", nullable: false),
+                    ProductName = table.Column<string>(type: "text", nullable: false),
                     AdminId = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation")
                 },
                 constraints: table =>
                 {
@@ -176,15 +140,11 @@ namespace SalesRegister.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ProductCode = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    Product = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    Measure = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
+                    ProductCode = table.Column<string>(type: "text", nullable: false),
+                    Product = table.Column<string>(type: "text", nullable: false),
+                    Measure = table.Column<string>(type: "text", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
                     AdminId = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation")
                 },
                 constraints: table =>
                 {
@@ -197,20 +157,28 @@ namespace SalesRegister.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ProductCode = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    Product = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    Measure = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    Quantity = table.Column<int>(type: "integer", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     AdminId = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_StockBalanceUpdates", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StockInwards",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    SupplierName = table.Column<string>(type: "text", nullable: false),
+                    AdminId = table.Column<string>(type: "text", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Approve = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StockInwards", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -233,12 +201,9 @@ namespace SalesRegister.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    RoleId = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    ClaimType = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
+                    RoleId = table.Column<string>(type: "text", nullable: false),
+                    ClaimType = table.Column<string>(type: "text", nullable: true),
                     ClaimValue = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation")
                 },
                 constraints: table =>
                 {
@@ -257,12 +222,9 @@ namespace SalesRegister.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    ClaimType = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    ClaimType = table.Column<string>(type: "text", nullable: true),
                     ClaimValue = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation")
                 },
                 constraints: table =>
                 {
@@ -279,14 +241,10 @@ namespace SalesRegister.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    ProviderKey = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    ProviderDisplayName = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    ProviderKey = table.Column<string>(type: "text", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
                     UserId = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation")
                 },
                 constraints: table =>
                 {
@@ -303,10 +261,8 @@ namespace SalesRegister.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
+                    UserId = table.Column<string>(type: "text", nullable: false),
                     RoleId = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation")
                 },
                 constraints: table =>
                 {
@@ -329,14 +285,10 @@ namespace SalesRegister.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    LoginProvider = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    Name = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
                     Value = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation")
                 },
                 constraints: table =>
                 {
@@ -355,18 +307,12 @@ namespace SalesRegister.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    InvoiceId = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    AdminId = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    Product = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    ProductId = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    Measure = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    MeasureId = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
+                    InvoiceId = table.Column<string>(type: "text", nullable: false),
+                    AdminId = table.Column<string>(type: "text", nullable: true),
+                    Product = table.Column<string>(type: "text", nullable: false),
+                    ProductId = table.Column<string>(type: "text", nullable: false),
+                    Measure = table.Column<string>(type: "text", nullable: false),
+                    MeasureId = table.Column<string>(type: "text", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
                     UnitPrice = table.Column<float>(type: "real", nullable: false),
                     Amount = table.Column<float>(type: "real", nullable: false),
@@ -388,20 +334,14 @@ namespace SalesRegister.Migrations
                 name: "ProductMeasureModel",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    ProductId = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    Quantity = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    Measure = table.Column<string>(type: "text", nullable: false)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
-                    QtyPerMeasure = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation"),
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    ProductId = table.Column<string>(type: "text", nullable: false),
+                    Quantity = table.Column<int>(type: "integer", nullable: false),
+                    Measure = table.Column<string>(type: "text", nullable: false),
+                    QtyPerMeasure = table.Column<int>(type: "integer", nullable: false),
                     CostPrice = table.Column<float>(type: "real", nullable: false),
                     UnitPrice = table.Column<float>(type: "real", nullable: false),
                     ProductsModelId = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "my_collation")
                 },
                 constraints: table =>
                 {
@@ -410,6 +350,55 @@ namespace SalesRegister.Migrations
                         name: "FK_ProductMeasureModel_Products_ProductsModelId",
                         column: x => x.ProductsModelId,
                         principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StockBalanceUpdateDetailsModel",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ProductCode = table.Column<string>(type: "text", nullable: false),
+                    Product = table.Column<string>(type: "text", nullable: false),
+                    Measure = table.Column<string>(type: "text", nullable: false),
+                    Quantity = table.Column<int>(type: "integer", nullable: false),
+                    AdminId = table.Column<string>(type: "text", nullable: false),
+                    Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    StockBalanceUpdateModelId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StockBalanceUpdateDetailsModel", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StockBalanceUpdateDetailsModel_StockBalanceUpdates_StockBal~",
+                        column: x => x.StockBalanceUpdateModelId,
+                        principalTable: "StockBalanceUpdates",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StockInwardDetailsModel",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ProductCode = table.Column<string>(type: "text", nullable: false),
+                    Product = table.Column<string>(type: "text", nullable: false),
+                    Measure = table.Column<string>(type: "text", nullable: false),
+                    Quantity = table.Column<int>(type: "integer", nullable: false),
+                    AdminId = table.Column<string>(type: "text", nullable: false),
+                    StockInwardModelId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StockInwardDetailsModel", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_StockInwardDetailsModel_StockInwards_StockInwardModelId",
+                        column: x => x.StockInwardModelId,
+                        principalTable: "StockInwards",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -460,6 +449,16 @@ namespace SalesRegister.Migrations
                 name: "IX_ProductMeasureModel_ProductsModelId",
                 table: "ProductMeasureModel",
                 column: "ProductsModelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StockBalanceUpdateDetailsModel_StockBalanceUpdateModelId",
+                table: "StockBalanceUpdateDetailsModel",
+                column: "StockBalanceUpdateModelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StockInwardDetailsModel_StockInwardModelId",
+                table: "StockInwardDetailsModel",
+                column: "StockInwardModelId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -498,7 +497,10 @@ namespace SalesRegister.Migrations
                 name: "StockBalances");
 
             migrationBuilder.DropTable(
-                name: "StockBalanceUpdates");
+                name: "StockBalanceUpdateDetailsModel");
+
+            migrationBuilder.DropTable(
+                name: "StockInwardDetailsModel");
 
             migrationBuilder.DropTable(
                 name: "Totals");
@@ -514,6 +516,12 @@ namespace SalesRegister.Migrations
 
             migrationBuilder.DropTable(
                 name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "StockBalanceUpdates");
+
+            migrationBuilder.DropTable(
+                name: "StockInwards");
         }
     }
 }

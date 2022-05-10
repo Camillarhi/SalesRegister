@@ -10,15 +10,13 @@ using SalesRegister.ApplicationDbContex;
 namespace SalesRegister.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220427080717_Inwards")]
-    partial class Inwards
+    [Migration("20220510090255_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Npgsql:CollationDefinition:my_collation", "en-u-ks-primary,en-u-ks-primary,icu,False")
-                .HasAnnotation("Npgsql:DefaultColumnCollation", "my_collation")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.12")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
@@ -319,11 +317,11 @@ namespace SalesRegister.Migrations
                     b.Property<string>("ProductsModelId")
                         .HasColumnType("text");
 
-                    b.Property<string>("QtyPerMeasure")
-                        .HasColumnType("text");
+                    b.Property<int>("QtyPerMeasure")
+                        .HasColumnType("integer");
 
-                    b.Property<string>("Quantity")
-                        .HasColumnType("text");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
 
                     b.Property<float>("UnitPrice")
                         .HasColumnType("real");

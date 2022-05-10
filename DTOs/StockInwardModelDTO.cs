@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -10,5 +11,7 @@ namespace SalesRegister.DTOs
     {
         [Required]
         public string SupplierName { get; set; }
+
+        public IFormFile StockInwardsDetail { get; set; }
     }
 }

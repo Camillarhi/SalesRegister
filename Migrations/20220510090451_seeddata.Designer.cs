@@ -10,15 +10,13 @@ using SalesRegister.ApplicationDbContex;
 namespace SalesRegister.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220421161807_init")]
-    partial class init
+    [Migration("20220510090451_seeddata")]
+    partial class seeddata
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Npgsql:CollationDefinition:my_collation", "en-u-ks-primary,en-u-ks-primary,icu,False")
-                .HasAnnotation("Npgsql:DefaultColumnCollation", "my_collation")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.12")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
@@ -47,6 +45,22 @@ namespace SalesRegister.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "fab4fah75c1-c546-41de-aebc-a14da6v45895711",
+                            ConcurrencyStamp = "1",
+                            Name = "Admin",
+                            NormalizedName = "Admin"
+                        },
+                        new
+                        {
+                            Id = "c7b01g63f0-5201-4317-abd8-c21hm81f91b7330",
+                            ConcurrencyStamp = "2",
+                            Name = "Staff",
+                            NormalizedName = "Staff"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -244,6 +258,10 @@ namespace SalesRegister.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<float>("Total")
                         .HasColumnType("real");
 
@@ -274,6 +292,10 @@ namespace SalesRegister.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Measure")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -311,11 +333,11 @@ namespace SalesRegister.Migrations
                     b.Property<string>("ProductsModelId")
                         .HasColumnType("text");
 
-                    b.Property<string>("QtyPerMeasure")
-                        .HasColumnType("text");
+                    b.Property<int>("QtyPerMeasure")
+                        .HasColumnType("integer");
 
-                    b.Property<string>("Quantity")
-                        .HasColumnType("text");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
 
                     b.Property<float>("UnitPrice")
                         .HasColumnType("real");
@@ -484,7 +506,7 @@ namespace SalesRegister.Migrations
                     b.ToTable("StockBalances");
                 });
 
-            modelBuilder.Entity("SalesRegister.Model.StockBalanceUpdateModel", b =>
+            modelBuilder.Entity("SalesRegister.Model.StockBalanceUpdateDetailsModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -513,9 +535,95 @@ namespace SalesRegister.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("StockBalanceUpdateModelId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StockBalanceUpdateModelId");
+
+                    b.ToTable("StockBalanceUpdateDetailsModel");
+                });
+
+            modelBuilder.Entity("SalesRegister.Model.StockBalanceUpdateModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("AdminId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp without time zone");
+
                     b.HasKey("Id");
 
                     b.ToTable("StockBalanceUpdates");
+                });
+
+            modelBuilder.Entity("SalesRegister.Model.StockInwardDetailsModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("AdminId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Measure")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Product")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProductCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("StockInwardModelId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StockInwardModelId");
+
+                    b.ToTable("StockInwardDetailsModel");
+                });
+
+            modelBuilder.Entity("SalesRegister.Model.StockInwardModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("AdminId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Approve")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("SupplierName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StockInwards");
                 });
 
             modelBuilder.Entity("SalesRegister.Model.TotalModel", b =>
@@ -601,6 +709,20 @@ namespace SalesRegister.Migrations
                         .HasForeignKey("ProductsModelId");
                 });
 
+            modelBuilder.Entity("SalesRegister.Model.StockBalanceUpdateDetailsModel", b =>
+                {
+                    b.HasOne("SalesRegister.Model.StockBalanceUpdateModel", null)
+                        .WithMany("stockBalanceUpdateDetails")
+                        .HasForeignKey("StockBalanceUpdateModelId");
+                });
+
+            modelBuilder.Entity("SalesRegister.Model.StockInwardDetailsModel", b =>
+                {
+                    b.HasOne("SalesRegister.Model.StockInwardModel", null)
+                        .WithMany("stockInwardDetails")
+                        .HasForeignKey("StockInwardModelId");
+                });
+
             modelBuilder.Entity("SalesRegister.Model.CustomerInvoiceModel", b =>
                 {
                     b.Navigation("InvoiceDetail");
@@ -609,6 +731,16 @@ namespace SalesRegister.Migrations
             modelBuilder.Entity("SalesRegister.Model.ProductsModel", b =>
                 {
                     b.Navigation("ProductMeasures");
+                });
+
+            modelBuilder.Entity("SalesRegister.Model.StockBalanceUpdateModel", b =>
+                {
+                    b.Navigation("stockBalanceUpdateDetails");
+                });
+
+            modelBuilder.Entity("SalesRegister.Model.StockInwardModel", b =>
+                {
+                    b.Navigation("stockInwardDetails");
                 });
 #pragma warning restore 612, 618
         }

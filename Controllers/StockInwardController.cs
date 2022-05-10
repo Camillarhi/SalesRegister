@@ -59,7 +59,7 @@ namespace SalesRegister.Controllers
 
         [HttpPost]
 
-        public ActionResult Post(IFormFile stockInward, [FromBody] StockInwardModelDTO stockInwardModelDTO )
+        public ActionResult Post([FromForm] StockInwardModelDTO stockInwardModelDTO)
         {
             if (ModelState.IsValid)
             {
@@ -68,14 +68,14 @@ namespace SalesRegister.Controllers
                 var stockInwards = new StockInwardModel
                 {
                     AdminId = currentUser,
-                    Date=DateTime.Now,
-                    SupplierName=stockInwardModelDTO.SupplierName,
+                    Date = DateTime.Now,
+                    SupplierName = stockInwardModelDTO.SupplierName,
                     Approve = false,
-                    stockInwardDetails=new List<StockInwardDetailsModel>()
+                    stockInwardDetails = new List<StockInwardDetailsModel>()
                 };
-                if (stockInward?.Length > 0)
+                if (stockInwardModelDTO.StockInwardsDetail?.Length > 0)
                 {
-                    var stream = stockInward.OpenReadStream();
+                    var stream = stockInwardModelDTO.StockInwardsDetail.OpenReadStream();
 
                     List<StockInwardDetailsModel> stockQuantity = new();
 
@@ -90,26 +90,25 @@ namespace SalesRegister.Controllers
                             {
                                 try
                                 {
-                                   // var productCode = worksheet.Cells[row, 2].Value?.ToString();
-                                    var product = worksheet.Cells[row, 3].Value?.ToString();
-                                    var measure = worksheet.Cells[row, 4].Value?.ToString();
-                                    var quantity = worksheet.Cells[row, 5].Value?.ToString();
+                                    var product = worksheet.Cells[row, 1].Value?.ToString();
+                                    var measure = worksheet.Cells[row, 2].Value?.ToString();
+                                    var quantity = worksheet.Cells[row, 3].Value?.ToString();
 
                                     var qty = Convert.ToInt32(quantity);
                                     var produtName = (product).ToUpper().Substring(0, 3);
-                                   
+
                                     var date = DateTime.Now;
                                     var productsQty = new StockInwardDetailsModel()
                                     {
                                         Product = product,
                                         Measure = measure,
                                         Quantity = qty,
-                                        AdminId=currentUser,
+                                        AdminId = currentUser,
                                     };
                                     var rnd = new Random();
                                     int num = rnd.Next(50);
                                     var productExistInDb = _db.Products.Where(x => x.AdminId == currentUser && x.ProductName == product).Include(x => x.ProductMeasures).FirstOrDefault();
-                                    if(productExistInDb == null)
+                                    if (productExistInDb == null)
                                     {
                                         productsQty.ProductCode = produtName + num;
                                     }
@@ -118,7 +117,7 @@ namespace SalesRegister.Controllers
                                         productsQty.ProductCode = productExistInDb.ProductCode;
                                     }
                                     stockInwards.stockInwardDetails.Add(productsQty);
-                                    
+
 
                                 }
                                 catch (Exception ex)
@@ -141,7 +140,89 @@ namespace SalesRegister.Controllers
             return Ok();
         }
 
-       [HttpPatch("{Id}")]
+        //public ActionResult Post(IFormFile stockInward, [FromBody] StockInwardModelDTO stockInwardModelDTO )
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+        //        var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
+        //        var stockInwards = new StockInwardModel
+        //        {
+        //            AdminId = currentUser,
+        //            Date=DateTime.Now,
+        //            SupplierName=stockInwardModelDTO.SupplierName,
+        //            Approve = false,
+        //            stockInwardDetails=new List<StockInwardDetailsModel>()
+        //        };
+        //        if (stockInward?.Length > 0)
+        //        {
+        //            var stream = stockInward.OpenReadStream();
+
+        //            List<StockInwardDetailsModel> stockQuantity = new();
+
+        //            try
+        //            {
+        //                using (var package = new ExcelPackage(stream))
+        //                {
+        //                    var worksheet = package.Workbook.Worksheets.First();
+        //                    var rowCount = worksheet.Dimension.Rows;
+
+        //                    for (var row = 2; row <= rowCount; row++)
+        //                    {
+        //                        try
+        //                        {
+        //                           // var productCode = worksheet.Cells[row, 2].Value?.ToString();
+        //                            var product = worksheet.Cells[row, 3].Value?.ToString();
+        //                            var measure = worksheet.Cells[row, 4].Value?.ToString();
+        //                            var quantity = worksheet.Cells[row, 5].Value?.ToString();
+
+        //                            var qty = Convert.ToInt32(quantity);
+        //                            var produtName = (product).ToUpper().Substring(0, 3);
+
+        //                            var date = DateTime.Now;
+        //                            var productsQty = new StockInwardDetailsModel()
+        //                            {
+        //                                Product = product,
+        //                                Measure = measure,
+        //                                Quantity = qty,
+        //                                AdminId=currentUser,
+        //                            };
+        //                            var rnd = new Random();
+        //                            int num = rnd.Next(50);
+        //                            var productExistInDb = _db.Products.Where(x => x.AdminId == currentUser && x.ProductName == product).Include(x => x.ProductMeasures).FirstOrDefault();
+        //                            if(productExistInDb == null)
+        //                            {
+        //                                productsQty.ProductCode = produtName + num;
+        //                            }
+        //                            else
+        //                            {
+        //                                productsQty.ProductCode = productExistInDb.ProductCode;
+        //                            }
+        //                            stockInwards.stockInwardDetails.Add(productsQty);
+
+
+        //                        }
+        //                        catch (Exception ex)
+        //                        {
+        //                            return BadRequest(ex);
+        //                        }
+
+        //                    }
+        //                    _db.StockInwards.Add(stockInwards);
+        //                    _db.SaveChanges();
+        //                }
+
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                return BadRequest(ex);
+        //            }
+        //        }
+        //    }
+        //    return Ok();
+        //}
+
+        [HttpPatch("{Id}")]
 
        public ActionResult Approve (int id)
         {

@@ -153,7 +153,8 @@ namespace SalesRegister.Controllers
                 var result = await _userManager.CreateAsync(staff, register.Password);
                 if (result.Succeeded)
                 {
-                    return BuildToken(register);
+                    return Ok();
+                    
                 }
                 else
                 {
@@ -165,31 +166,12 @@ namespace SalesRegister.Controllers
             return Ok();
 
         }
-        private AuthenticationResponse BuildToken(RegisterModelDTO register)
-        {
-            var claims = new List<Claim>()
-            {
-                new Claim("email", register.UserName)
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration ["keyjwt"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expiration = DateTime.UtcNow.AddMinutes(10);
-            var token = new JwtSecurityToken(issuer: null, audience: null, claims: claims,
-                expires: expiration, signingCredentials: creds);
-            return new AuthenticationResponse()
-            {
-                Token = new JwtSecurityTokenHandler().WriteToken(token),
-                 Email= register.UserName,
-                Expiration = expiration
-            };
-
-        }
+       
 
         // setup admin
         [HttpPost("setupadmin")]
 
-        public async Task<IActionResult> Register([FromForm] AdminFormDTO model)
+        public async Task<ActionResult<AuthenticationResponse>> Register([FromForm] AdminFormDTO model)
         {
             try
             {
@@ -229,10 +211,17 @@ namespace SalesRegister.Controllers
                     var result = await _userManager.UpdateAsync(newStaff2);
                     if (result.Succeeded)
                     {
-
-                        await _userManager.AddToRoleAsync(newStaff2, model.Department);
+                        await _userManager.AddToRoleAsync(newStaff2, "Admin");
+                        var role = await _userManager.GetRolesAsync(newStaff2);
+                        var logedIn = new AuthenticationResponse
+                        {
+                            Email = newStaff2.UserName,
+                            Id = newStaff2.Id,
+                            Role = role[0]
+                        };
                         _db.CompanyName.Add(companyName);
                         await _db.SaveChangesAsync();
+                        return BuildCreateToken(logedIn);
 
                     }
                 }
@@ -243,6 +232,29 @@ namespace SalesRegister.Controllers
 
                 return BadRequest(ex);
             }
+        }
+
+        private AuthenticationResponse BuildCreateToken(AuthenticationResponse register)
+        {
+            var claims = new List<Claim>()
+            {
+                new Claim("email", register.Email)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["keyjwt"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expiration = DateTime.UtcNow.AddMinutes(10);
+            var token = new JwtSecurityToken(issuer: null, audience: null, claims: claims,
+                expires: expiration, signingCredentials: creds);
+            return new AuthenticationResponse()
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                Email = register.Email,
+                Id = register.Id,
+                Expiration = expiration,
+                Role = register.Role
+            };
+
         }
         //register staff
         [HttpPost("registerstaff")]

@@ -15,8 +15,6 @@ namespace SalesRegister.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Npgsql:CollationDefinition:my_collation", "en-u-ks-primary,en-u-ks-primary,icu,False")
-                .HasAnnotation("Npgsql:DefaultColumnCollation", "my_collation")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.12")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
@@ -45,6 +43,22 @@ namespace SalesRegister.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "fab4fah75c1-c546-41de-aebc-a14da6v45895711",
+                            ConcurrencyStamp = "1",
+                            Name = "Admin",
+                            NormalizedName = "Admin"
+                        },
+                        new
+                        {
+                            Id = "c7b01g63f0-5201-4317-abd8-c21hm81f91b7330",
+                            ConcurrencyStamp = "2",
+                            Name = "Staff",
+                            NormalizedName = "Staff"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -317,11 +331,11 @@ namespace SalesRegister.Migrations
                     b.Property<string>("ProductsModelId")
                         .HasColumnType("text");
 
-                    b.Property<string>("QtyPerMeasure")
-                        .HasColumnType("text");
+                    b.Property<int>("QtyPerMeasure")
+                        .HasColumnType("integer");
 
-                    b.Property<string>("Quantity")
-                        .HasColumnType("text");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
 
                     b.Property<float>("UnitPrice")
                         .HasColumnType("real");
