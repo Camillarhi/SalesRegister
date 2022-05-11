@@ -243,7 +243,7 @@ namespace SalesRegister.Controllers
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["keyjwt"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expiration = DateTime.UtcNow.AddMinutes(10);
+            var expiration = DateTime.UtcNow.AddMinutes(60);
             var token = new JwtSecurityToken(issuer: null, audience: null, claims: claims,
                 expires: expiration, signingCredentials: creds);
             return new AuthenticationResponse()
@@ -492,7 +492,7 @@ namespace SalesRegister.Controllers
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["keyjwt"]));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expiration = DateTime.UtcNow.AddMinutes(20);
+            var expiration = DateTime.UtcNow.AddMinutes(60);
             var token = new JwtSecurityToken(issuer: null, audience: null, claims: claims,
                 expires: expiration, signingCredentials: creds);
             return new AuthenticationResponse()

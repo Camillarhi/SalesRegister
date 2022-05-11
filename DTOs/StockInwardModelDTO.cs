@@ -11,7 +11,7 @@ namespace SalesRegister.DTOs
     {
         [Required]
         public string SupplierName { get; set; }
-
+        [Required]
         public IFormFile StockInwardsDetail { get; set; }
     }
 }

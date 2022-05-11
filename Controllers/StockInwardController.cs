@@ -276,7 +276,7 @@ namespace SalesRegister.Controllers
                             };
                             addProduct.ProductMeasures.Add(addProductMeasure);
                             _db.Products.Add(addProduct);
-                            _db.SaveChanges();
+                            //_db.SaveChanges();
                         }
                         else
                         {
@@ -292,11 +292,11 @@ namespace SalesRegister.Controllers
                                 };
                                 productExist.ProductMeasures.Add(addProductMeasure);
                                 _db.Products.Add(productExist);
-                                _db.SaveChanges();
+                                //_db.SaveChanges();
                             }
                             else
                             {
-                                productMeasureExist.Quantity = item.Quantity;
+                                productMeasureExist.Quantity += item.Quantity;
                             }
                         }
                     }
