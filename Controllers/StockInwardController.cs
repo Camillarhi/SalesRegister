@@ -236,6 +236,7 @@ namespace SalesRegister.Controllers
                 var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
                 var stock = _db.StockInwards.Where(x => x.Id == id && x.AdminId == currentUser).Include(x => x.stockInwardDetails).FirstOrDefault();
                 var stockBalances = new List<StockBalanceModel>();
+                var products = new List<ProductsModel>();
                 if (stock.Approve)
                 {
                     return BadRequest();
@@ -247,59 +248,167 @@ namespace SalesRegister.Controllers
                     {
                         string uniqueId = System.Guid.NewGuid().ToString();
                         string measureUniqueId = System.Guid.NewGuid().ToString();
-                        var stockBalance = new StockBalanceModel
+                        var stockBalanceExist = _db.StockBalances.Where(x => x.Product == item.Product && x.Measure == item.Measure).FirstOrDefault();
+                        if(stockBalanceExist == null)
                         {
-                            Measure = item.Measure,
-                            AdminId=item.AdminId,
-                            Product=item.Product,
-                            ProductCode=item.ProductCode,
-                            Quantity=item.Quantity
-                        };
-                        stockBalances.Add(stockBalance);
-                        var productExist = _db.Products.Where(x => x.AdminId == currentUser && x.ProductName == item.Product).Include(x => x.ProductMeasures).FirstOrDefault();
-                        if (productExist == null)
-                        {
-                            var addProduct = new ProductsModel
+                            var stockBalance = new StockBalanceModel
                             {
-                                AdminId = currentUser,
-                                ProductCode = item.ProductCode,
-                                Id = uniqueId,
-                                ProductName = item.Product,
-                                ProductMeasures = new List<ProductMeasureModel>()
-                            };
-                            var addProductMeasure = new ProductMeasureModel
-                            {
-                                Id = measureUniqueId,
                                 Measure = item.Measure,
-                                ProductId = addProduct.Id,
+                                AdminId = item.AdminId,
+                                Product = item.Product,
+                                ProductCode = item.ProductCode,
                                 Quantity = item.Quantity
                             };
-                            addProduct.ProductMeasures.Add(addProductMeasure);
-                            _db.Products.Add(addProduct);
-                            //_db.SaveChanges();
+                            stockBalances.Add(stockBalance);
                         }
                         else
                         {
-                            var productMeasureExist = productExist.ProductMeasures.Where(x => x.Measure == item.Measure).FirstOrDefault();
-                            if (productMeasureExist == null)
+                            if(stockBalanceExist.Measure == item.Measure)
                             {
+                                stockBalanceExist.Quantity += item.Quantity;
+                            }
+                        }
+
+                        var productExist = _db.Products.Where(x => x.AdminId == currentUser && x.ProductName == item.Product).Include(x => x.ProductMeasures).FirstOrDefault();
+                        var productName = products.Where(x => x.ProductName == item.Product).FirstOrDefault();
+                        if (products.Count > 0 && productName != null)
+                        {
+                            if (productExist == null && productName == null)
+                            {
+                                var addProduct = new ProductsModel
+                                {
+                                    AdminId = currentUser,
+                                    ProductCode = item.ProductCode,
+                                    Id = uniqueId + item.ProductCode.ToLower(),
+                                    ProductName = item.Product,
+                                    ProductMeasures = new List<ProductMeasureModel>()
+                                };
                                 var addProductMeasure = new ProductMeasureModel
                                 {
-                                    Id = measureUniqueId,
+                                    Id = measureUniqueId + item.ProductCode.ToLower(),
                                     Measure = item.Measure,
-                                    ProductId = productExist.Id,
+                                    ProductId = addProduct.Id,
                                     Quantity = item.Quantity
                                 };
-                                productExist.ProductMeasures.Add(addProductMeasure);
-                                _db.Products.Add(productExist);
+                                addProduct.ProductMeasures.Add(addProductMeasure);
+                                products.Add(addProduct);
+                               // _db.Products.Add(addProduct);
                                 //_db.SaveChanges();
                             }
                             else
                             {
-                                productMeasureExist.Quantity += item.Quantity;
+                                if (productExist == null && productName != null)
+                                {
+                                    var productMeasureName = productName.ProductMeasures.Find(x => x.Measure == item.Measure);
+                                    if (productMeasureName == null)
+                                    {
+                                        var addProductMeasure = new ProductMeasureModel
+                                        {
+                                            Id = measureUniqueId + item.ProductCode.ToLower(),
+                                            Measure = item.Measure,
+                                            ProductId = productName.Id,
+                                            Quantity = item.Quantity
+                                        };
+                                        productName.ProductMeasures.Add(addProductMeasure);
+                                        products.Add(productName);
+                                        //e _db.Products.Add(productExist);
+                                        //_db.SaveChanges();
+                                    }
+                                }
+                                else if (productExist != null && productName == null)
+                                {
+
+                                    var productMeasureExist = productExist.ProductMeasures.Where(x => x.Measure == item.Measure).FirstOrDefault();
+                                    if (productMeasureExist != null)
+                                    {
+                                        productMeasureExist.Quantity += item.Quantity;
+                                        // productExist.ProductMeasures.Add(productMeasureExist);
+                                        // products.Add(productExist);
+                                    }
+
+                                }
+                                else
+                                {
+                                    if (productExist != null && productName != null)
+                                    {
+                                        var productMeasureExist = productExist.ProductMeasures.Where(x => x.Measure == item.Measure).FirstOrDefault();
+                                        var productMeasureName = productName.ProductMeasures.Find(x => x.Measure == item.Measure);
+                                        if(productMeasureName == null && productMeasureExist == null)
+                                        {
+                                            var addProductMeasure = new ProductMeasureModel
+                                            {
+                                                Id = measureUniqueId + item.ProductCode.ToLower(),
+                                                Measure = item.Measure,
+                                                ProductId = productName.Id,
+                                                Quantity = item.Quantity
+                                            };
+                                            productName.ProductMeasures.Add(addProductMeasure);
+                                            products.Add(productName);
+                                        }else 
+                                        {
+                                            if (productMeasureExist != null)
+                                            {
+                                                productMeasureExist.Quantity += item.Quantity;
+                                            }
+                                        }
+                                    }
+                                }
+                                //}
+                               
                             }
                         }
+                        else
+                        {
+                            if (productExist == null)
+                            {
+                                var addProduct = new ProductsModel
+                                {
+                                    AdminId = currentUser,
+                                    ProductCode = item.ProductCode,
+                                    Id = uniqueId + item.ProductCode.ToLower(),
+                                    ProductName = item.Product,
+                                    ProductMeasures = new List<ProductMeasureModel>()
+                                };
+                                var addProductMeasure = new ProductMeasureModel
+                                {
+                                    Id = measureUniqueId + item.ProductCode.ToLower(),
+                                    Measure = item.Measure,
+                                    ProductId = addProduct.Id,
+                                    Quantity = item.Quantity
+                                };
+                                addProduct.ProductMeasures.Add(addProductMeasure);
+                                products.Add(addProduct);
+                                // _db.Products.Add(addProduct);
+                                //_db.SaveChanges();
+                            }
+                            else
+                            {
+                                var productMeasureExist = productExist.ProductMeasures.Where(x => x.Measure == item.Measure).FirstOrDefault();
+                                    if (productMeasureExist == null)
+                                    {
+                                        var addProductMeasure = new ProductMeasureModel
+                                        {
+                                            Id = measureUniqueId + item.ProductCode.ToLower(),
+                                            Measure = item.Measure,
+                                            ProductId = productExist.Id,
+                                            Quantity = item.Quantity
+                                        };
+                                        productExist.ProductMeasures.Add(addProductMeasure);
+                                        products.Add(productExist);
+                                        // _db.Products.Add(productExist);
+                                        //_db.SaveChanges();
+                                    }
+                                    else
+                                    {
+                                            productMeasureExist.Quantity += item.Quantity;
+                                           // productExist.ProductMeasures.Add(productMeasureExist);
+                                           // products.Add(productExist);
+                                    }
+                            }
+                        }
+                        
                     }
+                    _db.Products.AddRange(products);
                     _db.StockBalances.AddRange(stockBalances);
                     _db.StockInwards.Update(stock);
                     _db.SaveChanges();
