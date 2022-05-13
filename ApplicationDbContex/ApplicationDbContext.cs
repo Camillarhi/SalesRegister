@@ -43,6 +43,7 @@ namespace SalesRegister.ApplicationDbContex
         public DbSet<StockBalanceUpdateModel> StockBalanceUpdates { get; set; }
         public DbSet<CustomerInvoiceModel> CustomerInvoice { get; set; }
         public DbSet<StockInwardModel> StockInwards { get; set; }
+        public DbSet<ProductMeasureModel> ProductMeasureModel { get; set; }
 
     }
 }

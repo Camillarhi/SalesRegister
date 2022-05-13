@@ -408,8 +408,8 @@ namespace SalesRegister.Controllers
                         }
                         
                     }
-                    _db.Products.AddRange(products);
-                    _db.StockBalances.AddRange(stockBalances);
+                    _db.Products.UpdateRange(products);
+                    _db.StockBalances.UpdateRange(stockBalances);
                     _db.StockInwards.Update(stock);
                     _db.SaveChanges();
                 }

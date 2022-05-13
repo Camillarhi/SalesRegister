@@ -94,12 +94,16 @@ namespace SalesRegister.Controllers
                     };
                     var product = _db.Products.Where(x => x.AdminId == currentUser && x.Id == item.ProductId).Include(y => y.ProductMeasures).FirstOrDefault();
                     var unitPrice = product.ProductMeasures.Find(x => x.Id == item.MeasureId && x.ProductId == item.ProductId).UnitPrice;
+                    var updateProductQty = product.ProductMeasures.Find(x => x.Id == item.MeasureId && x.ProductId == item.ProductId);
+                    updateProductQty.Quantity -= recordDetail.Quantity;
                     recordDetail.UnitPrice = unitPrice;
                     recordDetail.Amount = unitPrice * recordDetail.Quantity;
                     var productsQty = _db.StockBalances.Where(u => u.Measure == recordDetail.Measure && u.Product == recordDetail.Product).Select(u => u.Id).FirstOrDefault();
                     var update = _db.StockBalances.Find(productsQty);
                     update.Quantity -= recordDetail.Quantity;
+                    //i put update fun for stock and nit for product
                     _db.StockBalances.Update(update);
+                    _db.Products.Update(product);
                     record.InvoiceDetail.Add(recordDetail);
                 }
                 for (var i = 0; i < record.InvoiceDetail.Count; i++)

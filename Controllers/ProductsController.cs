@@ -159,20 +159,44 @@ namespace SalesRegister.Controllers
                 var product = _db.Products.Where(x => x.Id == Id && x.AdminId == currentUser).Include(y => y.ProductMeasures).FirstOrDefault();
                 product.ProductName = (productsModel.ProductName).ToUpper();
                 product.ProductCode = productName + num;
+                var productMeasureExsit = product.ProductMeasures;
+                foreach(var child in product.ProductMeasures)
+                {
+                    _db.ProductMeasureModel.Remove(child);
+                }
                 product.ProductMeasures = new List<ProductMeasureModel>();
                 foreach (var item in productsModel.ProductMeasures)
                 {
                     string measureUniqueId = System.Guid.NewGuid().ToString();
-                    var productMeasure = new ProductMeasureModel
+                    var productQty = productMeasureExsit.Find(x => x.Measure == item.Measure);
+                    if (productQty == null)
                     {
-                        Id = measureUniqueId,
-                        ProductId = product.Id,
-                        CostPrice = item.CostPrice,
-                        Measure = item.Measure,
-                        QtyPerMeasure = item.QtyPerMeasure,
-                        UnitPrice = item.UnitPrice
-                    };
-                    product.ProductMeasures.Add(productMeasure);
+                        var productMeasure = new ProductMeasureModel
+                        {
+                            Id = measureUniqueId,
+                            ProductId = product.Id,
+                            CostPrice = item.CostPrice,
+                            Measure = item.Measure,
+                            QtyPerMeasure = item.QtyPerMeasure,
+                            UnitPrice = item.UnitPrice,
+                        };
+                        product.ProductMeasures.Add(productMeasure);
+                    }
+                    else
+                    {
+                        var productMeasure = new ProductMeasureModel
+                        {
+                            Id = measureUniqueId,
+                            ProductId = product.Id,
+                            CostPrice = item.CostPrice,
+                            Measure = item.Measure,
+                            QtyPerMeasure = item.QtyPerMeasure,
+                            UnitPrice = item.UnitPrice,
+                            Quantity = productQty.Quantity
+                        };
+                        product.ProductMeasures.Add(productMeasure);
+                    }
+
                 }
                     //    else
                     //    {
