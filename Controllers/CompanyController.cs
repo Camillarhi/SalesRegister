@@ -35,7 +35,7 @@ namespace SalesRegister.Controllers
         }
 
 
-        [HttpGet("{Id}")]
+        [HttpGet("com/{Id}")]
 
         public async Task<ActionResult> Get(string Id)
         {
