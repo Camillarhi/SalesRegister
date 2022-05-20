@@ -84,29 +84,29 @@ namespace SalesRegister
 
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                //var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
                 string connStr;
 
-               // if (env == "Development")
-               // {
+                if (env == "Development")
+                {
                     connStr = Configuration["ConnectionStrings:SalesConnection"];
-               // }
-                //else
-                //{
-                //    // Use connection string provided at runtime by Heroku.
-                //    var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+                }
+                else
+                {
+                    // Use connection string provided at runtime by Heroku.
+                    var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
-                //    connUrl = connUrl.Replace("postgres://", string.Empty);
-                //    var userPassSide = connUrl.Split("@")[0];
-                //    var hostSide = connUrl.Split("@")[1];
+                    connUrl = connUrl.Replace("postgres://", string.Empty);
+                    var userPassSide = connUrl.Split("@")[0];
+                    var hostSide = connUrl.Split("@")[1];
 
-                //    var user = userPassSide.Split(":")[0];
-                //    var password = userPassSide.Split(":")[1];
-                //    var host = hostSide.Split("/")[0];
-                //    var database = hostSide.Split("/")[1].Split("?")[0];
+                    var user = userPassSide.Split(":")[0];
+                    var password = userPassSide.Split(":")[1];
+                    var host = hostSide.Split("/")[0];
+                    var database = hostSide.Split("/")[1].Split("?")[0];
 
-                //    connStr = $"Host={host};Database={database};Username={user};Password={password};SSL Mode=Require;Trust Server Certificate=true";
-                //}
+                    connStr = $"Host={host};Database={database};Username={user};Password={password};TrustServerCertificate=true;sslmode=Require";
+                }
 
                 options.UseNpgsql(connStr)
                // .UseLowerCaseNamingConvention()
