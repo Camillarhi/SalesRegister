@@ -106,7 +106,7 @@ namespace SalesRegister
                     var database = hostSide.Split("/")[1].Split("?")[0];
 
                     //connStr = $"Host={host};Database={database};Username={user};Password={password};TrustServerCertificate=true;sslmode=Require";
-                    connStr = $"Server={host};Database={database};User ID={user};Password={password};Port=5432;TrustServerCertificate=true;sslmode=Require";
+                    connStr = $"Server=ec2-54-87-99-12.compute-1.amazonaws.com;Database={database};User ID={user};Password={password};Port=5432;TrustServerCertificate=true;sslmode=Require";
                    // connStr = "User ID=kiaxhvoalhtmzj;Password=75294cfb97f9efe5dc5c64008a610282a22b95b17936fcaf09ec977bdffcd961;Server=ec2-54-87-99-12.compute-1.amazonaws.com;Port=5432;Database=d44obd7jv17ea3;TrustServerCertificate=true;sslmode=Require";
                 }
 
