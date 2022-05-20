@@ -248,7 +248,7 @@ namespace SalesRegister.Controllers
                     {
                         string uniqueId = System.Guid.NewGuid().ToString();
                         string measureUniqueId = System.Guid.NewGuid().ToString();
-                        var stockBalanceExist = _db.StockBalances.Where(x => x.Product == item.Product && x.Measure == item.Measure).FirstOrDefault();
+                        var stockBalanceExist = _db.StockBalances.Where(x => x.Product == item.Product && x.Measure == item.Measure && x.AdminId == currentUser).FirstOrDefault();
                         if(stockBalanceExist == null)
                         {
                             var stockBalance = new StockBalanceModel
@@ -259,13 +259,15 @@ namespace SalesRegister.Controllers
                                 ProductCode = item.ProductCode,
                                 Quantity = item.Quantity
                             };
-                            stockBalances.Add(stockBalance);
+                            //stockBalances.Add(stockBalance);
+                            _db.StockBalances.Add(stockBalance);
                         }
                         else
                         {
                             if(stockBalanceExist.Measure == item.Measure)
                             {
                                 stockBalanceExist.Quantity += item.Quantity;
+                                _db.StockBalances.Update(stockBalanceExist);
                             }
                         }
 
@@ -292,7 +294,7 @@ namespace SalesRegister.Controllers
                                 };
                                 addProduct.ProductMeasures.Add(addProductMeasure);
                                 products.Add(addProduct);
-                               // _db.Products.Add(addProduct);
+                                _db.Products.Add(addProduct);
                                 //_db.SaveChanges();
                             }
                             else
@@ -311,7 +313,7 @@ namespace SalesRegister.Controllers
                                         };
                                         productName.ProductMeasures.Add(addProductMeasure);
                                         products.Add(productName);
-                                        //e _db.Products.Add(productExist);
+                                         _db.Products.Add(productName);
                                         //_db.SaveChanges();
                                     }
                                 }
@@ -322,8 +324,9 @@ namespace SalesRegister.Controllers
                                     if (productMeasureExist != null)
                                     {
                                         productMeasureExist.Quantity += item.Quantity;
-                                        // productExist.ProductMeasures.Add(productMeasureExist);
-                                        // products.Add(productExist);
+                                         productExist.ProductMeasures.Add(productMeasureExist);
+                                         products.Add(productExist);
+                                        _db.Products.Update(productExist);
                                     }
 
                                 }
@@ -344,11 +347,13 @@ namespace SalesRegister.Controllers
                                             };
                                             productName.ProductMeasures.Add(addProductMeasure);
                                             products.Add(productName);
+                                            _db.Products.Add(productName);
                                         }else 
                                         {
                                             if (productMeasureExist != null)
                                             {
                                                 productMeasureExist.Quantity += item.Quantity;
+                                                _db.Products.Update(productExist);
                                             }
                                         }
                                     }
@@ -378,7 +383,7 @@ namespace SalesRegister.Controllers
                                 };
                                 addProduct.ProductMeasures.Add(addProductMeasure);
                                 products.Add(addProduct);
-                                // _db.Products.Add(addProduct);
+                                 _db.Products.Add(addProduct);
                                 //_db.SaveChanges();
                             }
                             else
@@ -395,21 +400,22 @@ namespace SalesRegister.Controllers
                                         };
                                         productExist.ProductMeasures.Add(addProductMeasure);
                                         products.Add(productExist);
-                                        // _db.Products.Add(productExist);
+                                         _db.Products.Add(productExist);
                                         //_db.SaveChanges();
                                     }
                                     else
                                     {
                                             productMeasureExist.Quantity += item.Quantity;
-                                           // productExist.ProductMeasures.Add(productMeasureExist);
-                                           // products.Add(productExist);
+                                     productExist.ProductMeasures.Add(productMeasureExist);
+                                     products.Add(productExist);
+                                    _db.Products.Update(productExist);
                                     }
                             }
                         }
                         
                     }
-                    _db.Products.UpdateRange(products);
-                    _db.StockBalances.UpdateRange(stockBalances);
+                   // _db.Products.UpdateRange(products);
+                   // _db.StockBalances.UpdateRange(stockBalances);
                     _db.StockInwards.Update(stock);
                     _db.SaveChanges();
                 }
