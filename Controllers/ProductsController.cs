@@ -26,6 +26,7 @@ namespace SalesRegister.Controllers
     {
         private readonly ApplicationDbContext _db;
         UserManager<StaffModel> _userManager;
+
         public ProductsController(ApplicationDbContext db, UserManager<StaffModel> userManager
             )
         {
