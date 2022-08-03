@@ -46,6 +46,19 @@ namespace SalesRegister.Controllers
             return Ok(objList);
         }
 
+
+        [HttpGet("updatedproducts")]
+        //   [AllowAnonymous]
+        public async Task<ActionResult<ProductsModel>> GetAllWithPrice()
+        {
+            var currentUserEmail = User.FindFirstValue(ClaimTypes.Email);
+            var currentUser = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.CreatedById).FirstOrDefault();
+
+            IEnumerable<ProductsModel> objList = _db.Products.Where(x => x.AdminId == currentUser).Include(y => y.ProductMeasures.Where(y => y.UnitPrice != 0));
+
+            return Ok(objList);
+        }
+
         //[HttpGet("getProduct")]
         ////   [AllowAnonymous]
         //public async Task<ActionResult<ProductsModel>> GetProduct()

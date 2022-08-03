@@ -260,6 +260,9 @@ namespace SalesRegister.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("SoldById")
+                        .HasColumnType("text");
+
                     b.Property<float>("Total")
                         .HasColumnType("real");
 
@@ -303,6 +306,10 @@ namespace SalesRegister.Migrations
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
+
+                    b.Property<string>("SoldById")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<float>("UnitPrice")
                         .HasColumnType("real");

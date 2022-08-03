@@ -67,6 +67,7 @@ namespace SalesRegister.Controllers
                 var record = new CustomerInvoiceModel();
                 var records = new List<DailyRecordsModel>();
                 var totAmt = new List<float>();
+                record.SoldById = _db.Users.Where(u => u.Email == currentUserEmail).Select(u => u.Id).FirstOrDefault();
                 record.AdminId = currentUser;
                 record.CustomerName = customerInvoiceModel.CustomerName;
                 record.PhoneNumber = customerInvoiceModel.PhoneNumber;
@@ -114,6 +115,7 @@ namespace SalesRegister.Controllers
                 foreach (var item in customerInvoiceModel.InvoiceDetail)
                 {
                     var dailySales = new DailyRecordsModel();
+                    dailySales.SoldById = record.SoldById;  
                     dailySales.AdminId = record.AdminId;
                     dailySales.Quantity = item.Quantity;
                     dailySales.Product = item.Product;

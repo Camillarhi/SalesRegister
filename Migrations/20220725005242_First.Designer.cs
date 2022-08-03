@@ -10,8 +10,8 @@ using SalesRegister.ApplicationDbContex;
 namespace SalesRegister.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220510090451_seeddata")]
-    partial class seeddata
+    [Migration("20220725005242_First")]
+    partial class First
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -52,14 +52,14 @@ namespace SalesRegister.Migrations
                             Id = "fab4fah75c1-c546-41de-aebc-a14da6v45895711",
                             ConcurrencyStamp = "1",
                             Name = "Admin",
-                            NormalizedName = "Admin"
+                            NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "c7b01g63f0-5201-4317-abd8-c21hm81f91b7330",
                             ConcurrencyStamp = "2",
                             Name = "Staff",
-                            NormalizedName = "Staff"
+                            NormalizedName = "STAFF"
                         });
                 });
 

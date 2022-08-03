@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace SalesRegister.Migrations
 {
-    public partial class init : Migration
+    public partial class First : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -401,6 +401,15 @@ namespace SalesRegister.Migrations
                         principalTable: "StockInwards",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "fab4fah75c1-c546-41de-aebc-a14da6v45895711", "1", "Admin", "ADMIN" },
+                    { "c7b01g63f0-5201-4317-abd8-c21hm81f91b7330", "2", "Staff", "STAFF" }
                 });
 
             migrationBuilder.CreateIndex(

@@ -36,5 +36,7 @@ namespace SalesRegister.Model
         public string PhoneNumber { get; set; }
         [Required]
         public string AdminId { get; set; }
+        [Required]
+        public string SoldById { get; set; }
     }
 }

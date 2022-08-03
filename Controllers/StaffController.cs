@@ -243,7 +243,7 @@ namespace SalesRegister.Controllers
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["keyjwt"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expiration = DateTime.UtcNow.AddMinutes(60);
+            var expiration = DateTime.UtcNow.AddDays(1);
             var token = new JwtSecurityToken(issuer: null, audience: null, claims: claims,
                 expires: expiration, signingCredentials: creds);
             return new AuthenticationResponse()
@@ -447,7 +447,6 @@ namespace SalesRegister.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<AuthenticationResponse>> Login([FromBody] LoginModelDTO login)
         {
-
             try
             {
                 if (ModelState.IsValid)
@@ -492,7 +491,7 @@ namespace SalesRegister.Controllers
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["keyjwt"]));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expiration = DateTime.UtcNow.AddMinutes(60);
+            var expiration = DateTime.UtcNow.AddDays(1);
             var token = new JwtSecurityToken(issuer: null, audience: null, claims: claims,
                 expires: expiration, signingCredentials: creds);
             return new AuthenticationResponse()

@@ -23,6 +23,8 @@ namespace SalesRegister.Model
 
         public string AdminId { get; set; }
 
+        public string SoldById { get; set; }
+
         public float Total { get; set; }
 
         public List<CustomerInvoiceDetailModel> InvoiceDetail { get; set; }

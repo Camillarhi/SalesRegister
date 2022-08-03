@@ -10,8 +10,8 @@ using SalesRegister.ApplicationDbContex;
 namespace SalesRegister.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220512232621_productchild")]
-    partial class productchild
+    [Migration("20220731023507_Second")]
+    partial class Second
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -262,6 +262,9 @@ namespace SalesRegister.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("SoldById")
+                        .HasColumnType("text");
+
                     b.Property<float>("Total")
                         .HasColumnType("real");
 
@@ -305,6 +308,10 @@ namespace SalesRegister.Migrations
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
+
+                    b.Property<string>("SoldById")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<float>("UnitPrice")
                         .HasColumnType("real");

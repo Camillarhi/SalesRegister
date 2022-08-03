@@ -83,7 +83,6 @@ C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\SalesRegister.deps.json
 C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\SalesRegister.runtimeconfig.json
 C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\SalesRegister.runtimeconfig.dev.json
 C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\SalesRegister.dll
-C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\ref\SalesRegister.dll
 C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\SalesRegister.pdb
 C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\AutoMapper.dll
 C:\TASKS\SalesRegister\SalesRegister\bin\Debug\net5.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
@@ -151,7 +150,6 @@ C:\TASKS\SalesRegister\SalesRegister\obj\Debug\net5.0\SalesRegister.csproj.CoreC
 C:\TASKS\SalesRegister\SalesRegister\obj\Debug\net5.0\SalesRegister.MvcApplicationPartsAssemblyInfo.cs
 C:\TASKS\SalesRegister\SalesRegister\obj\Debug\net5.0\SalesRegister.MvcApplicationPartsAssemblyInfo.cache
 C:\TASKS\SalesRegister\SalesRegister\obj\Debug\net5.0\staticwebassets\SalesRegister.StaticWebAssets.Manifest.cache
-C:\TASKS\SalesRegister\SalesRegister\obj\Debug\net5.0\staticwebassets\SalesRegister.StaticWebAssets.xml
 C:\TASKS\SalesRegister\SalesRegister\obj\Debug\net5.0\scopedcss\bundle\SalesRegister.styles.css
 C:\TASKS\SalesRegister\SalesRegister\obj\Debug\net5.0\SalesRegister.RazorTargetAssemblyInfo.cache
 C:\TASKS\SalesRegister\SalesRegister\obj\Debug\net5.0\SalesRegister.csproj.CopyComplete
@@ -160,3 +158,4 @@ C:\TASKS\SalesRegister\SalesRegister\obj\Debug\net5.0\ref\SalesRegister.dll
 C:\TASKS\SalesRegister\SalesRegister\obj\Debug\net5.0\SalesRegister.pdb
 C:\TASKS\SalesRegister\SalesRegister\obj\Debug\net5.0\SalesRegister.genruntimeconfig.cache
 C:\TASKS\SalesRegister\SalesRegister\obj\Debug\net5.0\SalesRegister.csproj.AssemblyReference.cache
+C:\TASKS\SalesRegister\SalesRegister\obj\Debug\net5.0\refint\SalesRegister.dll
